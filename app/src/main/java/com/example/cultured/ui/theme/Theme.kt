@@ -1,4 +1,4 @@
-package com.example.lostfound.ui.theme
+package com.example.cultured.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

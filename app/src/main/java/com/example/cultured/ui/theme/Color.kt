@@ -1,4 +1,5 @@
-package com.example.lostfound.ui.theme
+package com.example.cultured.ui.theme
+
 import androidx.compose.ui.graphics.Color
 
 val primaryLight = Color(0xFF565992)

@@ -1,16 +1,27 @@
 [versions]
-agp = "8.5.1"
-kotlin = "1.9.0"
+agp = "8.5.2"
+converterGson = "2.9.0"
+kotlin = "2.0.21"
 coreKtx = "1.15.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.9.3"
-composeBom = "2024.04.01"
+composeBom = "2024.11.00"
+retrofit = "2.9.0"
+uiTextGoogleFonts = "1.7.5"
+composeNavigation = "2.8.4"
+serialization = "1.6.3"
+hiltAndroid = "2.52"
+hiltNavigation = "1.2.0"
+workRuntimeKtx = "2.10.0"
+roomKtx = "2.6.1"
+gson = "2.10.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -24,8 +35,69 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
+navgiation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "composeNavigation" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
+hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroid" }
+androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigation" }
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomKtx" }
+androidx-room-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomKtx" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomKtx" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
 
+[bundles]
+compose = [
+    "androidx-activity-compose",
+    "androidx-material3",
+    "androidx-ui",
+    "androidx-ui-graphics",
+    "androidx-ui-tooling-preview",
+]
+
+compose-debug = [
+    "junit",
+    "androidx-junit",
+    "androidx-espresso-core",
+    "androidx-ui-test-junit4",
+    "androidx-ui-tooling",
+    "androidx-ui-test-manifest"
+]
+
+navigation = [
+    "navgiation-compose",
+    "kotlinx-serialization-json"
+]
+
+dagger-hilt = [
+    "hilt-android",
+    "androidx-hilt-navigation-compose"
+]
+
+dagger-hilt-kapt = [
+    "hilt-android-compiler"
+]
+
+room = [
+    "androidx-room-ktx",
+    "androidx-work-runtime-ktx",
+    "androidx-room-runtime",
+    "gson"
+]
+
+room-kapt = [
+    "androidx-room-room-compiler"
+]
+
+retrofit = [
+    "converter-gson",
+    "retrofit"
+]

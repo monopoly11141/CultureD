@@ -21,6 +21,23 @@ class EventUiModelProvider : PreviewParameterProvider<EventUiModel> {
             longitude = 37.5983328190955,
             latitude = 127.091624142481,
             isFree = false
+        ),
+        EventUiModel(
+            typeList = listOf("축제", "문화", "예술"),
+            district = "종로구",
+            title = "[서울생활문화센터 체부] 시민이 만드는 시민의 음악 축제, [2024 서울시민음악제] 개최!",
+            startDate = "2024-11-03",
+            endDate = "2024-11-30",
+            location = "체부홀 등",
+            organization = "서울생활문화센터-체부",
+            targetAudience = "누구나",
+            feeInformation = "",
+            eventUrl = "http://www.ccasc.or.kr/bbs/notice_view.php?idx=381&amp;page=1",
+            imageUrl = "https://culture.seoul.go.kr/cmmn/file/getImage.do?atchFileId=7c01d31eb1c345a998293fd647ae8fad&amp;thumb=Y",
+            themeCode = "기타",
+            longitude = 37.5767084987432,
+            latitude = 126.97148941423,
+            isFree = true
         )
     )
 }

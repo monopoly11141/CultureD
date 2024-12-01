@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -43,7 +44,7 @@ fun EventItem(
             error = painterResource(id = R.drawable.image_not_found)
         )
 
-        Column() {
+        Column {
 
             Row(
                 modifier = Modifier
@@ -68,11 +69,13 @@ fun EventItem(
             }
 
             Text(
+                modifier = Modifier
+                    .padding(4.dp),
                 text = eventUiModel.title,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.ExtraBold,
                 fontFamily = AppTypography.headlineLarge.fontFamily,
-                fontSize = 20.sp
+                fontSize = 16.sp
             )
 
             EventCostItem(
@@ -81,11 +84,15 @@ fun EventItem(
             )
 
             Text(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 4.dp),
                 text = "${eventUiModel.startDate} ~ ${eventUiModel.endDate}",
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Medium,
                 fontFamily = AppTypography.headlineLarge.fontFamily,
-                fontSize = 12.sp
+                fontSize = 12.sp,
+                textAlign = TextAlign.End
             )
 
         }

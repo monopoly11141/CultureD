@@ -75,4 +75,7 @@ dependencies {
     //retrofit
     implementation(libs.bundles.retrofit)
 
+    //coil
+    implementation(libs.bundles.coil)
+
 }

@@ -1,0 +1,65 @@
+package com.example.cultured.event.presentation.list.component
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Place
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.sp
+import com.example.cultured.event.presentation.model.EventUiModel
+import com.example.cultured.event.presentation.preview.EventUiModelProvider
+import com.example.cultured.ui.theme.CultureDTheme
+
+@Composable
+fun EventCostItem(
+    modifier: Modifier = Modifier,
+    feeInformation: String,
+    isFree: Boolean
+) {
+    Row(
+        modifier = modifier
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.Info,
+            contentDescription = "가격 아이콘",
+            tint = MaterialTheme.colorScheme.primary,
+        )
+
+        Text(
+            text = getFeeString(feeInformation, isFree),
+            color = MaterialTheme.colorScheme.primary,
+            fontWeight = FontWeight.Medium,
+            fontSize = 16.sp
+        )
+    }
+}
+
+private fun getFeeString(
+    feeInformation: String,
+    isFree: Boolean
+) : String {
+    if(isFree) {
+        return "무료"
+    }
+    return feeInformation
+}
+
+@Preview
+@Composable
+private fun EventCostItemPreview(@PreviewParameter(EventUiModelProvider::class) eventUiModel: EventUiModel) {
+    CultureDTheme {
+        EventCostItem(
+            feeInformation = eventUiModel.feeInformation,
+            isFree = eventUiModel.isFree
+        )
+    }
+}

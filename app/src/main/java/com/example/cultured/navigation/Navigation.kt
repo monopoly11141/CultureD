@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.cultured.culture_event.presentation.list.CultureEventListScreenRoot
+import com.example.cultured.event.presentation.list.EventListScreenRoot
 
 @Composable
 fun Navigation(
@@ -12,10 +12,10 @@ fun Navigation(
 ) {
     NavHost(
         navController = navHostController,
-        startDestination = Screen.CultureEventListScreen.route
+        startDestination = Screen.EventListScreen.route
     ) {
-        composable(Screen.CultureEventListScreen.route) {
-            CultureEventListScreenRoot(
+        composable(Screen.EventListScreen.route) {
+            EventListScreenRoot(
                 navController = navHostController
             )
         }

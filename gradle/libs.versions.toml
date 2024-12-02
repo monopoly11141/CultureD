@@ -1,7 +1,7 @@
 [versions]
 agp = "8.5.2"
+autoValueTikxml = "0.8.15"
 coilCompose = "3.0.4"
-converterGson = "2.9.0"
 kotlin = "2.0.21"
 coreKtx = "1.15.0"
 junit = "4.13.2"
@@ -10,7 +10,9 @@ espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.9.3"
 composeBom = "2024.11.00"
-retrofit = "2.9.0"
+loggingInterceptor = "4.12.0"
+retrofit = "2.11.0"
+tikxml = "0.8.15"
 uiTextGoogleFonts = "1.7.5"
 composeNavigation = "2.8.4"
 serialization = "1.6.3"
@@ -22,8 +24,11 @@ gson = "2.10.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "loggingInterceptor" }
+tikxml-annotation = { module = "com.tickaroo.tikxml:annotation", version.ref = "autoValueTikxml" }
+auto-value-tikxml = { module = "com.tickaroo.tikxml:auto-value-tikxml", version.ref = "autoValueTikxml" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
-converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
+tikxml-core = { module = "com.tickaroo.tikxml:core", version.ref = "autoValueTikxml" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -48,7 +53,9 @@ androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomKtx"
 androidx-room-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomKtx" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomKtx" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+tikxml-processor = { module = "com.tickaroo.tikxml:processor", version.ref = "autoValueTikxml" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+tikxml = { module = "com.tickaroo.tikxml:retrofit-converter", version.ref = "tikxml" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -100,10 +107,21 @@ room-kapt = [
 ]
 
 retrofit = [
-    "converter-gson",
-    "retrofit"
+    "retrofit",
+    "logging-interceptor"
 ]
 
 coil = [
     "coil-compose"
+]
+
+tikxml = [
+    "tikxml",
+    "tikxml-annotation",
+    "tikxml-core"
+]
+
+tikxml-kapt = [
+    "tikxml-processor",
+    "auto-value-tikxml"
 ]

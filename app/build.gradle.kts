@@ -75,7 +75,10 @@ dependencies {
     //retrofit
     implementation(libs.bundles.retrofit)
 
+    //tikxml
+    implementation(libs.bundles.tikxml)
+    kapt(libs.bundles.tikxml.kapt)
+
     //coil
     implementation(libs.bundles.coil)
-
 }

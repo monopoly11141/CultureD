@@ -39,5 +39,6 @@ class EventUiModelProvider : PreviewParameterProvider<EventUiModel> {
             latitude = 126.97148941423,
             isFree = true
         )
+
     )
 }

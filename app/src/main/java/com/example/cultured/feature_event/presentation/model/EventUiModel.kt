@@ -65,7 +65,7 @@ data class EventUiModel(
      * LOT
      * ex) 37.5983328190955
      */
-    val longitude: Double = 0.0,
+    val longitude: Number = 0.0,
     /**
      *  LAT
      *  ex) 127.091624142481

@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cultured.feature_event.data.model.EventModel
+import com.example.cultured.feature_event.data.model.toEventUiModel
 import com.example.cultured.feature_event.domain.repository.EventRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,10 +33,9 @@ class EventListViewModel @Inject constructor(
                         try {
                             _state.update {
                                 it.copy(
-                                    eventModel = response.body()!!
+                                    eventUiModelList = response.body()!!.eventList.map{event -> event.toEventUiModel()},
                                 )
                             }
-                            Log.d("EventListViewModel", _state.value.eventModel.toString())
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }

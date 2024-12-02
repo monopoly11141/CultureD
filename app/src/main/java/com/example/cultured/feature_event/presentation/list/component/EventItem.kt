@@ -1,5 +1,6 @@
 package com.example.cultured.feature_event.presentation.list.component
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -37,8 +38,15 @@ fun EventItem(
         modifier = modifier
             .background(MaterialTheme.colorScheme.background)
     ) {
+        Log.d("EventItem", "${eventUiModel.imageUrl}")
+//        AsyncImage(
+//            model = eventUiModel.imageUrl,
+//            contentDescription = "${eventUiModel.title} 대표 이미지",
+//            placeholder = painterResource(id = R.drawable.loading_image),
+//            error = painterResource(id = R.drawable.image_not_found)
+//        )
         AsyncImage(
-            model = eventUiModel.imageUrl,
+            model = "${eventUiModel.imageUrl}",
             contentDescription = "${eventUiModel.title} 대표 이미지",
             placeholder = painterResource(id = R.drawable.loading_image),
             error = painterResource(id = R.drawable.image_not_found)

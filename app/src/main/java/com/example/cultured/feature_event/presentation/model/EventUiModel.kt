@@ -1,4 +1,4 @@
-package com.example.cultured.event.presentation.model
+package com.example.cultured.feature_event.presentation.model
 
 data class EventUiModel(
     /**

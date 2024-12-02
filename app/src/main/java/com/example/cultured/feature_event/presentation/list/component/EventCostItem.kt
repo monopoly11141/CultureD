@@ -1,4 +1,4 @@
-package com.example.cultured.event.presentation.list.component
+package com.example.cultured.feature_event.presentation.list.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
@@ -14,8 +14,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.sp
-import com.example.cultured.event.presentation.model.EventUiModel
-import com.example.cultured.event.presentation.preview.EventUiModelProvider
+import com.example.cultured.feature_event.presentation.model.EventUiModel
+import com.example.cultured.feature_event.presentation.preview.EventUiModelProvider
 import com.example.cultured.ui.theme.CultureDTheme
 
 @Composable

@@ -1,4 +1,4 @@
-package com.example.cultured.event.data.model
+package com.example.cultured.feature_event.data.model
 
 import com.tickaroo.tikxml.annotation.Element
 import com.tickaroo.tikxml.annotation.PropertyElement
@@ -43,5 +43,5 @@ data class Event(
     @PropertyElement(name = "LAT")
     val latitude: String  = "",
     @PropertyElement(name = "IS_FREE")
-    val isFree: String = ""
+    val free: String = ""
 )

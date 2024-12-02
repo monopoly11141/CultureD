@@ -1,4 +1,4 @@
-package com.example.cultured.event.presentation.list.component
+package com.example.cultured.feature_event.presentation.list.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.example.cultured.R
-import com.example.cultured.event.presentation.model.EventUiModel
-import com.example.cultured.event.presentation.preview.EventUiModelProvider
+import com.example.cultured.feature_event.presentation.model.EventUiModel
+import com.example.cultured.feature_event.presentation.preview.EventUiModelProvider
 import com.example.cultured.ui.theme.AppTypography
 import com.example.cultured.ui.theme.CultureDTheme
 

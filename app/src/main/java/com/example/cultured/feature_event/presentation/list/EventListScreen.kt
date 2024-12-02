@@ -1,4 +1,4 @@
-package com.example.cultured.event.presentation.list
+package com.example.cultured.feature_event.presentation.list
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,9 +13,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.cultured.event.presentation.list.component.EventItem
-import com.example.cultured.event.presentation.model.EventUiModel
-import com.example.cultured.event.presentation.preview.EventUiModelListProvider
+import com.example.cultured.feature_event.presentation.list.component.EventItem
+import com.example.cultured.feature_event.presentation.model.EventUiModel
+import com.example.cultured.feature_event.presentation.preview.EventUiModelListProvider
 import com.example.cultured.ui.theme.CultureDTheme
 
 @Composable

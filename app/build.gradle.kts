@@ -79,6 +79,6 @@ dependencies {
     implementation(libs.bundles.tikxml)
     kapt(libs.bundles.tikxml.kapt)
 
-    //coil
-    implementation(libs.bundles.coil)
+    //landscapist coil
+    implementation(libs.bundles.landscapist.coil)
 }

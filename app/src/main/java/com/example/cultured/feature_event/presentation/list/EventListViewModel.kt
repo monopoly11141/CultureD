@@ -1,11 +1,11 @@
 package com.example.cultured.feature_event.presentation.list
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cultured.feature_event.data.model.EventModel
 import com.example.cultured.feature_event.data.model.toEventUiModel
 import com.example.cultured.feature_event.domain.repository.EventRepository
+import com.example.cultured.util.DateUtil.TODAY_DATE
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,7 +25,7 @@ class EventListViewModel @Inject constructor(
     private val _state = MutableStateFlow(EventListState())
     val state = _state
         .onStart {
-            val eventCall = repository.getEventApi().getEventModel("2024-10-10")
+            val eventCall = repository.getEventApi().getEventModelWithDate("2024-12-03")
 
             eventCall.enqueue(object : Callback<EventModel> {
                 override fun onResponse(eventModelCall: Call<EventModel>, response: Response<EventModel>) {
@@ -33,7 +33,7 @@ class EventListViewModel @Inject constructor(
                         try {
                             _state.update {
                                 it.copy(
-                                    eventUiModelList = response.body()!!.eventList.map{event -> event.toEventUiModel()},
+                                    eventUiModelList = response.body()!!.eventList.map{ event -> event.toEventUiModel() }.toSet(),
                                 )
                             }
                         } catch (e: Exception) {

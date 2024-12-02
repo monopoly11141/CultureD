@@ -1,5 +1,7 @@
 package com.example.cultured.feature_event.presentation.model
 
+import java.time.LocalDate
+
 data class EventUiModel(
     /**
      *  CODENAME
@@ -77,3 +79,12 @@ data class EventUiModel(
      */
     val isFree: Boolean = true
 )
+
+fun EventUiModel.isHappeningAt(dateString: String) : Boolean{
+    val startLocalDate = LocalDate.parse(this.startDate)
+    val endLocalDate = LocalDate.parse(this.endDate)
+
+    val dateStringLocalDate = LocalDate.parse(dateString)
+
+    return dateStringLocalDate in startLocalDate..endLocalDate
+}

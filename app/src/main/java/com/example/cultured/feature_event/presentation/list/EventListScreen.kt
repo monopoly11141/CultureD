@@ -45,7 +45,7 @@ fun EventListScreen(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        items(state.eventUiModelList) { eventUiModel ->
+        items(state.eventUiModelList.toList()) { eventUiModel ->
             EventItem(
                 eventUiModel = eventUiModel,
                 onItemClick = {}
@@ -65,7 +65,7 @@ private fun EventListScreenPreview(@PreviewParameter(EventUiModelListProvider::c
         EventListScreen(
             navController = rememberNavController(),
             state = EventListState(
-                eventUiModelList = eventUiModelList
+                eventUiModelList = eventUiModelList.toSet()
             ),
             onAction = {}
         )

@@ -21,6 +21,10 @@ hiltNavigation = "1.2.0"
 workRuntimeKtx = "2.10.0"
 roomKtx = "2.6.1"
 gson = "2.10.1"
+firebaseAuth = "23.1.0"
+firebaseBom = "33.6.0"
+firebaseCore = "21.1.1"
+googleServices = "4.4.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -56,12 +60,16 @@ gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 tikxml-processor = { module = "com.tickaroo.tikxml:processor", version.ref = "autoValueTikxml" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 tikxml = { module = "com.tickaroo.tikxml:retrofit-converter", version.ref = "tikxml" }
+firebase-auth = { module = "com.google.firebase:firebase-auth", version.ref = "firebaseAuth" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-core = { module = "com.google.firebase:firebase-core", version.ref = "firebaseCore" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltAndroid" }
+google-services = {id = "com.google.gms.google-services", version.ref = "googleServices"}
 
 [bundles]
 compose = [
@@ -124,4 +132,10 @@ tikxml = [
 tikxml-kapt = [
     "tikxml-processor",
     "auto-value-tikxml"
+]
+
+firebase = [
+    "firebase-bom",
+    "firebase-core",
+    "firebase-auth"
 ]

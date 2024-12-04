@@ -1,6 +1,5 @@
 package com.example.cultured.feature_event.presentation.list
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cultured.feature_event.data.model.EventModel
@@ -28,39 +27,7 @@ class EventListViewModel @Inject constructor(
     private val _state = MutableStateFlow(EventListState())
     val state = _state
         .onStart {
-
-            for(i in 0..365) {
-
-                val eventCall = repository.getEventApi().getEventModelWithDate(TODAY_DATE.getNDaysAgo(i))
-                eventCall.enqueue(object : Callback<EventModel> {
-                    override fun onResponse(eventModelCall: Call<EventModel>, response: Response<EventModel>) {
-                        if (response.isSuccessful) {
-                            try {
-                                val eventUiModelSet = _state.value.eventUiModelSet.toMutableSet()
-                                response.body()!!.eventList.map { event -> event.toEventUiModel() }.forEach { eventUiModel ->
-                                    if(eventUiModel.isHappeningAt(TODAY_DATE)) {
-                                        eventUiModelSet.add(eventUiModel)
-                                    }
-                                }
-
-                                _state.update {
-                                    it.copy(
-                                        eventUiModelSet = eventUiModelSet.sortedByDescending {eventUiModel -> eventUiModel.startDate}.toSet()
-                                    )
-                                }
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                            }
-                        }
-                    }
-
-                    override fun onFailure(eventModelCall: Call<EventModel>, throwable: Throwable) {
-                        throwable.printStackTrace()
-                    }
-
-                })
-            }
-
+            initState()
         }
         .stateIn(
             viewModelScope,
@@ -68,9 +35,70 @@ class EventListViewModel @Inject constructor(
             EventListState()
         )
 
+    private fun initState() {
+        for (i in 0..365) {
+
+            val eventCall = repository.getEventApi().getEventModelWithDate(TODAY_DATE.getNDaysAgo(i))
+            eventCall.enqueue(object : Callback<EventModel> {
+                override fun onResponse(eventModelCall: Call<EventModel>, response: Response<EventModel>) {
+                    if (response.isSuccessful) {
+                        try {
+                            val eventUiModelSet = _state.value.entireEventUiModelSet.toMutableSet()
+                            response.body()!!.eventList.map { event -> event.toEventUiModel() }
+                                .forEach { eventUiModel ->
+                                    if (eventUiModel.isHappeningAt(TODAY_DATE)) {
+                                        eventUiModelSet.add(eventUiModel)
+                                    }
+                                }
+
+                            _state.update {
+                                it.copy(
+                                    entireEventUiModelSet = eventUiModelSet.sortedByDescending { eventUiModel -> eventUiModel.startDate }
+                                        .toSet(),
+                                    displayingEventUiModelSet = _state.value.entireEventUiModelSet
+                                )
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                }
+
+                override fun onFailure(eventModelCall: Call<EventModel>, throwable: Throwable) {
+                    throwable.printStackTrace()
+                }
+
+            })
+        }
+    }
+
     fun onAction(action: EventListAction) {
         when (action) {
-            else -> {}
+            is EventListAction.OnSearchQueryChange -> {
+                onSearchQueryChange(action.searchQuery)
+            }
         }
+    }
+
+    private fun onSearchQueryChange(searchQuery: String) {
+
+        _state.update {
+            it.copy(
+                searchQuery = searchQuery
+            )
+        }
+
+        val entireEventUiModel = state.value.entireEventUiModelSet
+        _state.update {
+            it.copy(
+                displayingEventUiModelSet = entireEventUiModel.filter { eventUiModel ->
+                    eventUiModel.title.contains(
+                        searchQuery,
+                        ignoreCase = true
+                    )
+                }.toSet()
+            )
+        }
+
     }
 }

@@ -1,11 +1,14 @@
 package com.example.cultured.feature_event.presentation.list
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cultured.feature_event.data.model.EventModel
 import com.example.cultured.feature_event.data.model.toEventUiModel
 import com.example.cultured.feature_event.domain.repository.EventRepository
+import com.example.cultured.feature_event.presentation.model.isHappeningAt
 import com.example.cultured.util.DateUtil.TODAY_DATE
+import com.example.cultured.util.DateUtil.getNDaysAgo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,28 +28,39 @@ class EventListViewModel @Inject constructor(
     private val _state = MutableStateFlow(EventListState())
     val state = _state
         .onStart {
-            val eventCall = repository.getEventApi().getEventModelWithDate("2024-12-03")
 
-            eventCall.enqueue(object : Callback<EventModel> {
-                override fun onResponse(eventModelCall: Call<EventModel>, response: Response<EventModel>) {
-                    if (response.isSuccessful) {
-                        try {
-                            _state.update {
-                                it.copy(
-                                    eventUiModelList = response.body()!!.eventList.map{ event -> event.toEventUiModel() }.toSet(),
-                                )
+            for(i in 0..365) {
+
+                val eventCall = repository.getEventApi().getEventModelWithDate(TODAY_DATE.getNDaysAgo(i))
+                eventCall.enqueue(object : Callback<EventModel> {
+                    override fun onResponse(eventModelCall: Call<EventModel>, response: Response<EventModel>) {
+                        if (response.isSuccessful) {
+                            try {
+                                val eventUiModelSet = _state.value.eventUiModelSet.toMutableSet()
+                                response.body()!!.eventList.map { event -> event.toEventUiModel() }.forEach { eventUiModel ->
+                                    if(eventUiModel.isHappeningAt(TODAY_DATE)) {
+                                        eventUiModelSet.add(eventUiModel)
+                                    }
+                                }
+
+                                _state.update {
+                                    it.copy(
+                                        eventUiModelSet = eventUiModelSet.sortedByDescending {eventUiModel -> eventUiModel.startDate}.toSet()
+                                    )
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
                             }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
                         }
                     }
-                }
 
-                override fun onFailure(eventModelCall: Call<EventModel>, throwable: Throwable) {
-                    throwable.printStackTrace()
-                }
+                    override fun onFailure(eventModelCall: Call<EventModel>, throwable: Throwable) {
+                        throwable.printStackTrace()
+                    }
 
-            })
+                })
+            }
+
         }
         .stateIn(
             viewModelScope,

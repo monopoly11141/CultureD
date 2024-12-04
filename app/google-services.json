@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "546798750655",
+    "project_id": "cultured-58d97",
+    "storage_bucket": "cultured-58d97.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:546798750655:android:58746b37c911a1e3d06f0a",
+        "android_client_info": {
+          "package_name": "com.example.cultured"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAaBV0hHO_pIH9oRKl1vwk0A47hpCy7W4I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

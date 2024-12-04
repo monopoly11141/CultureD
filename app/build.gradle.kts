@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     id("com.google.dagger.hilt.android")
     id("kotlin-kapt")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -81,4 +82,7 @@ dependencies {
 
     //landscapist coil
     implementation(libs.bundles.landscapist.coil)
+
+    //firebase
+    implementation(libs.bundles.firebase)
 }

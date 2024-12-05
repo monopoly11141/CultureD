@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.cultured.feature_event.presentation.list.EventListScreenRoot
+import com.example.cultured.feature_login.presentation.login.LoginScreenRoot
 
 @Composable
 fun Navigation(
@@ -20,6 +21,12 @@ fun Navigation(
             )
         }
 
+
+        composable(Screen.LoginScreen.route) {
+            LoginScreenRoot(
+                navController = navHostController
+            )
+        }
 
     }
 }

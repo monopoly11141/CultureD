@@ -19,6 +19,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.cultured.navigation.Screen
 import com.example.cultured.ui.theme.CultureDTheme
 
 
@@ -54,6 +55,11 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+
+            state.firebaseUser?.let {
+                navController.navigate(Screen.EventListScreen.route)
+            }
+
             TextField(
                 value = state.email,
                 onValueChange = { email ->

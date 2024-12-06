@@ -13,7 +13,7 @@ fun Navigation(
 ) {
     NavHost(
         navController = navHostController,
-        startDestination = Screen.EventListScreen.route
+        startDestination = Screen.LoginScreen.route
     ) {
         composable(Screen.EventListScreen.route) {
             EventListScreenRoot(

@@ -2,6 +2,9 @@ package com.example.cultured.feature_login.presentation.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.cultured.core.domain.onError
+import com.example.cultured.core.domain.onSuccess
+import com.example.cultured.feature_login.domain.repository.LoginRepository
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -14,21 +17,26 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor() : ViewModel() {
-    private lateinit var auth : FirebaseAuth
+class LoginViewModel @Inject constructor(
+    private val repository: LoginRepository
+) : ViewModel() {
+    private lateinit var auth: FirebaseAuth
 
     private val _state = MutableStateFlow(LoginState())
     val state = _state
         .onStart {
             auth = Firebase.auth
 
-            auth.currentUser?.let { currentUser ->
-                _state.update {
-                    it.copy(
-                        firebaseUser = currentUser
-                    )
+            repository.getCurrentUser()
+                .onSuccess { currentUser ->
+                    _state.update {
+                        it.copy(
+                            firebaseUser = currentUser
+                        )
+                    }
+                }.onError {
+                    //
                 }
-            }
         }
         .stateIn(
             viewModelScope,
@@ -41,16 +49,14 @@ class LoginViewModel @Inject constructor() : ViewModel() {
             is LoginAction.OnEmailChange -> {
                 onEmailChange(action.email)
             }
-
             is LoginAction.OnPasswordChange -> {
                 onPasswordChange(action.password)
             }
-
-            is LoginAction.OnLoginClick -> TODO()
             is LoginAction.OnSignUpClick -> {
                 onSignUpClick()
-
-
+            }
+            is LoginAction.OnLoginClick -> {
+                onLoginClick()
             }
 
         }
@@ -73,18 +79,28 @@ class LoginViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun onSignUpClick() {
-        auth
-            .createUserWithEmailAndPassword(_state.value.email, _state.value.password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    _state.update {
-                        it.copy(
-                            firebaseUser = auth.currentUser
-                        )
-                    }
-                } else {
-
+        repository.loginWithEmailAndPassword(_state.value.email, _state.value.password)
+            .onSuccess { currentUser ->
+                _state.update {
+                    it.copy(
+                        firebaseUser = currentUser
+                    )
                 }
+            }.onError {
+                //
+            }
+    }
+
+    private fun onLoginClick() {
+        repository.loginWithEmailAndPassword(_state.value.email, _state.value.password)
+            .onSuccess { currentUser ->
+                _state.update {
+                    it.copy(
+                        firebaseUser = currentUser
+                    )
+                }
+            }.onError {
+                //
             }
     }
 

@@ -1,5 +1,6 @@
 package com.example.cultured.feature_login.data
 
+import android.util.Log
 import com.example.cultured.core.domain.Result
 import com.example.cultured.feature_login.domain.FirebaseAuthError
 import com.example.cultured.feature_login.domain.repository.LoginRepository
@@ -15,9 +16,9 @@ class LoginRepositoryImpl() : LoginRepository {
     override fun getCurrentUser(): Result<FirebaseUser, FirebaseAuthError> {
         auth = Firebase.auth
 
-        return if(auth.currentUser == null) {
+        return if (auth.currentUser == null) {
             Result.Error(FirebaseAuthError.USER_NOT_LOGGED_IN)
-        }else {
+        } else {
             Result.Success(auth.currentUser!!)
         }
 
@@ -28,13 +29,19 @@ class LoginRepositoryImpl() : LoginRepository {
 
         var user: FirebaseUser? = null
 
-        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { _ ->
-            user = auth.currentUser
+        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Log.d("LoginRepository", "Success")
+                user = auth.currentUser
+            } else {
+                Log.d("LoginRepository", "Failure: ${task.exception?.message}")
+            }
+
         }
 
         return if (user == null) {
             Result.Error(FirebaseAuthError.LOGIN_FAILED)
-        }else {
+        } else {
             Result.Success(user!!)
         }
     }
@@ -50,7 +57,7 @@ class LoginRepositoryImpl() : LoginRepository {
 
         return if (user == null) {
             Result.Error(FirebaseAuthError.LOGIN_FAILED)
-        }else {
+        } else {
             Result.Success(user!!)
         }
     }

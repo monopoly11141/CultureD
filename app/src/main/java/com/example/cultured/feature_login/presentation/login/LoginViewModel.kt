@@ -1,5 +1,6 @@
 package com.example.cultured.feature_login.presentation.login
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cultured.core.domain.onError
@@ -34,7 +35,8 @@ class LoginViewModel @Inject constructor(
                             firebaseUser = currentUser
                         )
                     }
-                }.onError {
+                }.onError { error ->
+                    Log.d("LoginViewModel", "user not found: $error")
                     //
                 }
         }
@@ -79,14 +81,15 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun onSignUpClick() {
-        repository.loginWithEmailAndPassword(_state.value.email, _state.value.password)
+        repository.signUpWithEmailAndPassword(_state.value.email, _state.value.password)
             .onSuccess { currentUser ->
                 _state.update {
                     it.copy(
                         firebaseUser = currentUser
                     )
                 }
-            }.onError {
+            }.onError { error ->
+                Log.d("LoginViewModel", "signup not worked : $error")
                 //
             }
     }
@@ -99,7 +102,8 @@ class LoginViewModel @Inject constructor(
                         firebaseUser = currentUser
                     )
                 }
-            }.onError {
+            }.onError { error ->
+                Log.d("LoginViewModel", "login not worked : $error")
                 //
             }
     }

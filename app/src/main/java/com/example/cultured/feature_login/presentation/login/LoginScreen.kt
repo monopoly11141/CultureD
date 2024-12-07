@@ -15,7 +15,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -30,13 +29,19 @@ fun LoginScreenRoot(
     navController: NavController,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
-    LoginScreen(
-        navController = navController,
-        state = viewModel.state.collectAsStateWithLifecycle().value,
-        onAction = { action ->
-            viewModel.onAction(action)
-        }
-    )
+
+    if (viewModel.state.collectAsStateWithLifecycle().value.firebaseUser == null) {
+        LoginScreen(
+            navController = navController,
+            state = viewModel.state.collectAsStateWithLifecycle().value,
+            onAction = { action ->
+                viewModel.onAction(action)
+            }
+        )
+    } else {
+        navController.navigate(Screen.EventListScreen.route)
+    }
+
 }
 
 @Composable
@@ -47,9 +52,11 @@ fun LoginScreen(
     onAction: (LoginAction) -> Unit
 ) {
 
-//    LaunchedEffect(key1 = state.firebaseUser != null) {
-//        navController.navigate(Screen.EventListScreen.route)
-//    }
+    LaunchedEffect(key1 = state.firebaseUser) {
+        if (state.firebaseUser != null) {
+            navController.navigate(Screen.EventListScreen.route)
+        }
+    }
 
     Scaffold(
 
@@ -61,10 +68,6 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-
-            state.firebaseUser?.let {
-                navController.navigate(Screen.EventListScreen.route)
-            }
 
             TextField(
                 value = state.email,

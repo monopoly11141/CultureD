@@ -2,13 +2,17 @@ package com.example.cultured.feature_login.presentation.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.cultured.feature_login.domain.FirebaseAuthError
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,6 +33,9 @@ class LoginViewModel @Inject constructor(
             SharingStarted.WhileSubscribed(5000L),
             LoginState()
         )
+
+    private val _eventChannel = Channel<LoginEvent>()
+    val eventChannel = _eventChannel.receiveAsFlow()
 
     fun onAction(action: LoginAction) {
         when (action) {
@@ -77,7 +84,9 @@ class LoginViewModel @Inject constructor(
                     )
                 }
             } else {
-
+                viewModelScope.launch {
+                    _eventChannel.send(LoginEvent.Error(error = FirebaseAuthError.SIGNUP_FAILED))
+                }
             }
         }
     }
@@ -91,7 +100,9 @@ class LoginViewModel @Inject constructor(
                     )
                 }
             } else {
-
+                viewModelScope.launch {
+                    _eventChannel.send(LoginEvent.Error(error = FirebaseAuthError.LOGIN_FAILED))
+                }
             }
         }
     }

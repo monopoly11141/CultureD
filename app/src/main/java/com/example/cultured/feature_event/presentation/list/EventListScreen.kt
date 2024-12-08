@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -22,7 +21,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -30,6 +31,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.cultured.R
 import com.example.cultured.feature_event.presentation.list.component.EventItem
 import com.example.cultured.feature_event.presentation.model.EventUiModel
 import com.example.cultured.feature_event.presentation.preview.EventUiModelListProvider
@@ -76,8 +78,10 @@ fun EventListScreen(
                             navController.navigate(Screen.LoginScreen.route)
                         }) {
                             Icon(
-                                imageVector = Icons.Outlined.Home,
-                                contentDescription = "로그아웃"
+                                painter = painterResource(id = R.drawable.signout),
+                                contentDescription = "로그아웃",
+                                modifier = Modifier
+                                    .scale(0.7f)
                             )
                         }
                     }
@@ -87,7 +91,7 @@ fun EventListScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(MaterialTheme.colorScheme.background)
-                        .padding(horizontal = 4.dp),
+                        .padding(4.dp),
                     inputField = {
                         SearchBarDefaults.InputField(
                             query = state.searchQuery,
@@ -110,10 +114,12 @@ fun EventListScreen(
                     expanded = false,
                     onExpandedChange = {}
                 ) {}
+
             }
 
         }
     ) { paddingValues ->
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -131,6 +137,8 @@ fun EventListScreen(
                 )
             }
         }
+
+
     }
 }
 

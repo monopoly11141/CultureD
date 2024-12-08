@@ -8,6 +8,7 @@ import com.example.cultured.feature_event.domain.repository.EventRepository
 import com.example.cultured.feature_event.presentation.model.isHappeningAt
 import com.example.cultured.util.DateUtil.TODAY_DATE
 import com.example.cultured.util.DateUtil.getNDaysAgo
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,7 +22,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EventListViewModel @Inject constructor(
-    private val repository: EventRepository
+    private val repository: EventRepository,
+    private val firebaseAuth: FirebaseAuth
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(EventListState())
@@ -77,7 +79,15 @@ class EventListViewModel @Inject constructor(
             is EventListAction.OnSearchQueryChange -> {
                 onSearchQueryChange(action.searchQuery)
             }
+
+            is EventListAction.OnLogoutClick -> {
+                onLogoutClick()
+            }
         }
+    }
+
+    private fun onLogoutClick() {
+        firebaseAuth.signOut()
     }
 
     private fun onSearchQueryChange(searchQuery: String) {

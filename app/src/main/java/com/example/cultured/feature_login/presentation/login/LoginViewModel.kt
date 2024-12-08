@@ -1,7 +1,10 @@
 package com.example.cultured.feature_login.presentation.login
 
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.cultured.R
 import com.example.cultured.feature_login.domain.FirebaseAuthError
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +27,12 @@ class LoginViewModel @Inject constructor(
         .onStart {
             _state.update {
                 it.copy(
-                    firebaseUser = auth.currentUser
+                    firebaseUser = auth.currentUser,
+                    passwordInputFieldInfo = PasswordInputFieldInfo(
+                        resId = R.drawable.password_hide,
+                        contentDescription = "비밀번호 숨기기",
+                        visualTransformation = PasswordVisualTransformation()
+                    )
                 )
             }
         }
@@ -53,6 +61,10 @@ class LoginViewModel @Inject constructor(
 
             is LoginAction.OnLoginClick -> {
                 onLoginClick()
+            }
+
+            is LoginAction.OnPasswordIconClick -> {
+                onPasswordIconClick()
             }
 
         }
@@ -104,6 +116,28 @@ class LoginViewModel @Inject constructor(
                     _eventChannel.send(LoginEvent.Error(error = FirebaseAuthError.LOGIN_FAILED))
                 }
             }
+        }
+    }
+
+    private fun onPasswordIconClick() {
+
+        val passwordIconInfo = _state.value.passwordInputFieldInfo
+        _state.update {
+            it.copy(
+                passwordInputFieldInfo = if (passwordIconInfo.resId == R.drawable.password_hide) {
+                    PasswordInputFieldInfo(
+                        resId = R.drawable.password_show,
+                        contentDescription = "비밀번호 숨기기",
+                        visualTransformation = VisualTransformation.None
+                    )
+                } else {
+                    PasswordInputFieldInfo(
+                        resId = R.drawable.password_hide,
+                        contentDescription = "비밀번호 보여주기",
+                        visualTransformation = PasswordVisualTransformation()
+                    )
+                }
+            )
         }
     }
 

@@ -6,4 +6,6 @@ sealed interface LoginAction {
 
     data object OnLoginClick : LoginAction
     data object OnSignUpClick : LoginAction
+
+    data object OnPasswordIconClick: LoginAction
 }

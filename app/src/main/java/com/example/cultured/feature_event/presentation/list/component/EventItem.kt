@@ -68,7 +68,11 @@ fun EventItem(
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     items(eventUiModel.typeList) { typeString ->
-                        EventTypeItem(typeString = typeString)
+                        EventTypeItem(
+                            typeString = typeString,
+                            //TODO: Update
+                            onClick = {}
+                        )
                     }
                 }
 

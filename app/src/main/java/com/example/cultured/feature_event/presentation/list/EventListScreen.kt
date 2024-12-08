@@ -2,10 +2,13 @@ package com.example.cultured.feature_event.presentation.list
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
@@ -27,12 +30,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.cultured.R
 import com.example.cultured.feature_event.presentation.list.component.EventItem
+import com.example.cultured.feature_event.presentation.list.component.EventTypeItem
 import com.example.cultured.feature_event.presentation.model.EventUiModel
 import com.example.cultured.feature_event.presentation.preview.EventUiModelListProvider
 import com.example.cultured.navigation.Screen
@@ -54,7 +59,7 @@ fun EventListScreenRoot(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun EventListScreen(
     modifier: Modifier = Modifier,
@@ -91,7 +96,7 @@ fun EventListScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(MaterialTheme.colorScheme.background)
-                        .padding(4.dp),
+                        .padding(horizontal = 4.dp),
                     inputField = {
                         SearchBarDefaults.InputField(
                             query = state.searchQuery,
@@ -114,6 +119,22 @@ fun EventListScreen(
                     expanded = false,
                     onExpandedChange = {}
                 ) {}
+
+                FlowRow(
+                    modifier = modifier
+                        .fillMaxWidth()
+                ) {
+                    state.searchTypeList.forEach { searchType ->
+                        EventTypeItem(
+                            modifier = Modifier
+                                .padding(4.dp),
+                            typeString = searchType,
+                            fontSize = 14.sp,
+                            //TODO : Update
+                            onClick = {}
+                        )
+                    }
+                }
 
             }
 
@@ -150,7 +171,8 @@ private fun EventListScreenPreview(@PreviewParameter(EventUiModelListProvider::c
             navController = rememberNavController(),
             state = EventListState(
                 entireEventUiModelSet = eventUiModelList.toSet(),
-                displayingEventUiModelSet = eventUiModelList.toSet()
+                displayingEventUiModelSet = eventUiModelList.toSet(),
+                searchTypeList = eventUiModelList.map {it -> it.typeList}.flatten().toSet()
             ),
             onAction = {}
         )

@@ -57,7 +57,7 @@ class EventListViewModel @Inject constructor(
                                 it.copy(
                                     entireEventUiModelSet = eventUiModelSet.sortedByDescending { eventUiModel -> eventUiModel.startDate }
                                         .toSet(),
-                                    displayingEventUiModelSet = _state.value.entireEventUiModelSet
+                                    displayingEventUiModelSet = _state.value.entireEventUiModelSet,
                                 )
                             }
                         } catch (e: Exception) {
@@ -71,6 +71,14 @@ class EventListViewModel @Inject constructor(
                 }
 
             })
+        }
+
+        _state.value.entireEventUiModelSet.forEach { modelUiSet ->
+            _state.update {
+                it.copy(
+                    searchTypeList = _state.value.searchTypeList.plus(modelUiSet.typeList)
+                )
+            }
         }
     }
 

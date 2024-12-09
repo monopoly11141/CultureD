@@ -5,9 +5,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -69,13 +72,15 @@ fun EventListScreen(
 ) {
     val uriHandler = LocalUriHandler.current
     Scaffold(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize(),
         topBar = {
             Column(
 
             ) {
                 TopAppBar(
+                    modifier = modifier
+                        .heightIn(max = 56.dp),
                     title = { Text(text = "행사 정보") },
                     actions = {
                         IconButton(onClick = {
@@ -127,7 +132,7 @@ fun EventListScreen(
                     state.searchTypeSet.forEach { searchType ->
                         EventTypeItem(
                             modifier = Modifier
-                                .padding(4.dp),
+                                .padding(horizontal = 4.dp),
                             typeString = searchType,
                             fontSize = 14.sp,
                             onClick = { onAction.invoke(EventListAction.OnTypeClick(searchType)) }

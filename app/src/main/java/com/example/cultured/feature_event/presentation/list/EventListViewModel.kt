@@ -8,6 +8,7 @@ import com.example.cultured.feature_event.domain.repository.EventRepository
 import com.example.cultured.feature_event.presentation.model.isHappeningAt
 import com.example.cultured.util.DateUtil.TODAY_DATE
 import com.example.cultured.util.DateUtil.getNDaysAgo
+import com.example.cultured.util.EventTypeUtil.EVERY_EVENT
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +27,7 @@ class EventListViewModel @Inject constructor(
     private val firebaseAuth: FirebaseAuth
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(EventListState())
+    private val _state = MutableStateFlow(EventListState(searchTypeSet = setOf(EVERY_EVENT)))
     val state = _state
         .onStart {
             initState()
@@ -65,7 +66,6 @@ class EventListViewModel @Inject constructor(
                                         .toSet(),
                                     displayingEventUiModelSet = _state.value.entireEventUiModelSet,
                                     searchTypeSet = searchTypeSet.sortedBy { searchType -> searchType }.toSet()
-
                                 )
                             }
                         } catch (e: Exception) {
@@ -129,14 +129,19 @@ class EventListViewModel @Inject constructor(
             )
         }
 
-        val entireEventUiModel = state.value.entireEventUiModelSet
-        _state.update {
+        val displayingEventUiModel = if (type == EVERY_EVENT) {
+            _state.value.entireEventUiModelSet
+        } else {
+            _state.value.entireEventUiModelSet.filter { eventUiModel ->
+                eventUiModel.typeList.contains(
+                    type
+                )
+            }.toSet()
+        }
+
+        _state.update{
             it.copy(
-                displayingEventUiModelSet = entireEventUiModel.filter { eventUiModel ->
-                    eventUiModel.typeList.contains(
-                        type
-                    )
-                }.toSet()
+                displayingEventUiModelSet = displayingEventUiModel
             )
         }
     }

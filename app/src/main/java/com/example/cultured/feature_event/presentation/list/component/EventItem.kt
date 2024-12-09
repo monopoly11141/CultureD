@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cultured.R
+import com.example.cultured.feature_event.presentation.list.EventListAction
 import com.example.cultured.feature_event.presentation.model.EventUiModel
 import com.example.cultured.feature_event.presentation.preview.EventUiModelProvider
 import com.example.cultured.ui.theme.AppTypography
@@ -37,6 +38,7 @@ fun EventItem(
     modifier: Modifier = Modifier,
     eventUiModel: EventUiModel,
     onItemClick: () -> Unit,
+    onTypeClick: (typeItem: String) -> Unit
 ) {
     Row(
         modifier = modifier
@@ -70,8 +72,9 @@ fun EventItem(
                     items(eventUiModel.typeList) { typeString ->
                         EventTypeItem(
                             typeString = typeString,
-                            //TODO: Update
-                            onClick = {}
+                            onClick = {
+                               onTypeClick(typeString)
+                            }
                         )
                     }
                 }
@@ -120,7 +123,8 @@ private fun EventItemPreview(@PreviewParameter(EventUiModelProvider::class) even
     CultureDTheme {
         EventItem(
             eventUiModel = eventUiModel,
-            onItemClick = {}
+            onItemClick = {},
+            onTypeClick = {}
         )
     }
 }

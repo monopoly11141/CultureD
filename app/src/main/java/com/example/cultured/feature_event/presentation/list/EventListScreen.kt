@@ -1,5 +1,6 @@
 package com.example.cultured.feature_event.presentation.list
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -8,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
@@ -124,14 +124,13 @@ fun EventListScreen(
                     modifier = modifier
                         .fillMaxWidth()
                 ) {
-                    state.searchTypeList.forEach { searchType ->
+                    state.searchTypeSet.forEach { searchType ->
                         EventTypeItem(
                             modifier = Modifier
                                 .padding(4.dp),
                             typeString = searchType,
                             fontSize = 14.sp,
-                            //TODO : Update
-                            onClick = {}
+                            onClick = { onAction.invoke(EventListAction.OnTypeClick(searchType)) }
                         )
                     }
                 }
@@ -148,10 +147,14 @@ fun EventListScreen(
         ) {
             items(state.displayingEventUiModelSet.toList()) { eventUiModel ->
                 EventItem(
-                    eventUiModel = eventUiModel
-                ) {
-                    uriHandler.openUri(eventUiModel.eventUrl)
-                }
+                    eventUiModel = eventUiModel,
+                    onItemClick = {
+                        uriHandler.openUri(eventUiModel.eventUrl)
+                    },
+                    onTypeClick = { typeItem ->
+                        onAction.invoke(EventListAction.OnTypeClick(typeItem))
+                    }
+                )
 
                 HorizontalDivider(
                     color = MaterialTheme.colorScheme.primary
@@ -172,7 +175,7 @@ private fun EventListScreenPreview(@PreviewParameter(EventUiModelListProvider::c
             state = EventListState(
                 entireEventUiModelSet = eventUiModelList.toSet(),
                 displayingEventUiModelSet = eventUiModelList.toSet(),
-                searchTypeList = eventUiModelList.map {it -> it.typeList}.flatten().toSet()
+                searchTypeSet = eventUiModelList.map { it -> it.typeList }.flatten().toSet()
             ),
             onAction = {}
         )

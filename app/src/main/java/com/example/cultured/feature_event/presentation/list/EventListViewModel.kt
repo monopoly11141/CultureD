@@ -46,18 +46,26 @@ class EventListViewModel @Inject constructor(
                     if (response.isSuccessful) {
                         try {
                             val eventUiModelSet = _state.value.entireEventUiModelSet.toMutableSet()
-                            response.body()!!.eventList.map { event -> event.toEventUiModel() }
-                                .forEach { eventUiModel ->
-                                    if (eventUiModel.isHappeningAt(TODAY_DATE)) {
-                                        eventUiModelSet.add(eventUiModel)
+                            val searchTypeSet = _state.value.searchTypeSet.toMutableSet()
+                            response.body()?.let { body ->
+                                body.eventList.map { event -> event.toEventUiModel() }
+                                    .forEach { eventUiModel ->
+                                        if (eventUiModel.isHappeningAt(TODAY_DATE)) {
+                                            eventUiModelSet.add(eventUiModel)
+                                            eventUiModel.typeList.forEach { type ->
+                                                searchTypeSet.add(type)
+                                            }
+                                        }
                                     }
-                                }
+                            }
 
                             _state.update {
                                 it.copy(
                                     entireEventUiModelSet = eventUiModelSet.sortedByDescending { eventUiModel -> eventUiModel.startDate }
                                         .toSet(),
                                     displayingEventUiModelSet = _state.value.entireEventUiModelSet,
+                                    searchTypeSet = searchTypeSet.sortedBy { searchType -> searchType }.toSet()
+
                                 )
                             }
                         } catch (e: Exception) {
@@ -73,13 +81,6 @@ class EventListViewModel @Inject constructor(
             })
         }
 
-        _state.value.entireEventUiModelSet.forEach { modelUiSet ->
-            _state.update {
-                it.copy(
-                    searchTypeList = _state.value.searchTypeList.plus(modelUiSet.typeList)
-                )
-            }
-        }
     }
 
     fun onAction(action: EventListAction) {
@@ -88,15 +89,17 @@ class EventListViewModel @Inject constructor(
                 onSearchQueryChange(action.searchQuery)
             }
 
+            is EventListAction.OnTypeClick -> {
+                onTypeClick(action.type)
+            }
+
             is EventListAction.OnLogoutClick -> {
                 onLogoutClick()
             }
+
         }
     }
 
-    private fun onLogoutClick() {
-        firebaseAuth.signOut()
-    }
 
     private fun onSearchQueryChange(searchQuery: String) {
 
@@ -117,6 +120,29 @@ class EventListViewModel @Inject constructor(
                 }.toSet()
             )
         }
-
     }
+
+    private fun onTypeClick(type: String) {
+        _state.update {
+            it.copy(
+                searchQuery = ""
+            )
+        }
+
+        val entireEventUiModel = state.value.entireEventUiModelSet
+        _state.update {
+            it.copy(
+                displayingEventUiModelSet = entireEventUiModel.filter { eventUiModel ->
+                    eventUiModel.typeList.contains(
+                        type
+                    )
+                }.toSet()
+            )
+        }
+    }
+
+    private fun onLogoutClick() {
+        firebaseAuth.signOut()
+    }
+
 }

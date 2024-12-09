@@ -1,5 +1,6 @@
 package com.example.cultured.di
 
+import com.example.cultured.util.NullOnEmptyConverterFactory
 import com.example.cultured.util.UrlUtil.EVENT_BASE_URL
 import com.tickaroo.tikxml.TikXml
 import com.tickaroo.tikxml.retrofit.TikXmlConverterFactory
@@ -23,6 +24,7 @@ object NetworkModule {
 
         return Retrofit.Builder()
             .baseUrl(EVENT_BASE_URL)
+            .addConverterFactory(NullOnEmptyConverterFactory())
             .addConverterFactory(TikXmlConverterFactory.create(parser))
             .client(OkHttpClient.Builder().addInterceptor(HttpLoggingInterceptor()).build())
             .build()

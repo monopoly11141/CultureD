@@ -6,5 +6,5 @@ data class EventListState(
     val entireEventUiModelSet: Set<EventUiModel> = emptySet(),
     val displayingEventUiModelSet: Set<EventUiModel> = emptySet(),
     val searchQuery: String = "",
-    val searchTypeList: Set<String> = emptySet()
+    val searchTypeSet: Set<String> = emptySet()
 )

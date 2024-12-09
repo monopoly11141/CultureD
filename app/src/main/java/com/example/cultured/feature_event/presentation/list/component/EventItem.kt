@@ -1,17 +1,21 @@
 package com.example.cultured.feature_event.presentation.list.component
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,7 +30,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cultured.R
-import com.example.cultured.feature_event.presentation.list.EventListAction
 import com.example.cultured.feature_event.presentation.model.EventUiModel
 import com.example.cultured.feature_event.presentation.preview.EventUiModelProvider
 import com.example.cultured.ui.theme.AppTypography
@@ -38,7 +41,8 @@ fun EventItem(
     modifier: Modifier = Modifier,
     eventUiModel: EventUiModel,
     onItemClick: () -> Unit,
-    onTypeClick: (typeItem: String) -> Unit
+    onTypeClick: (typeItem: String) -> Unit,
+    onFavoriteIconClick: () -> Unit
 ) {
     Row(
         modifier = modifier
@@ -73,7 +77,7 @@ fun EventItem(
                         EventTypeItem(
                             typeString = typeString,
                             onClick = {
-                               onTypeClick(typeString)
+                                onTypeClick(typeString)
                             }
                         )
                     }
@@ -113,6 +117,19 @@ fun EventItem(
                 textAlign = TextAlign.End
             )
 
+            Row(
+                modifier = modifier
+                    .fillMaxWidth()
+            ) {
+                IconButton(onClick = { onFavoriteIconClick() }) {
+                    Icon(
+                        imageVector = if (eventUiModel.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                        contentDescription = if (eventUiModel.isFavorite) "즐겨찾기 해제하기" else "즐겨찾기 하기",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+
         }
     }
 }
@@ -124,7 +141,8 @@ private fun EventItemPreview(@PreviewParameter(EventUiModelProvider::class) even
         EventItem(
             eventUiModel = eventUiModel,
             onItemClick = {},
-            onTypeClick = {}
+            onTypeClick = {},
+            onFavoriteIconClick = {}
         )
     }
 }

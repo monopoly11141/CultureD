@@ -25,6 +25,7 @@ firebaseAuth = "23.1.0"
 firebaseBom = "33.6.0"
 firebaseCore = "21.1.1"
 googleServices = "4.4.2"
+firebaseFirestoreKtx = "25.1.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -63,6 +64,7 @@ tikxml = { module = "com.tickaroo.tikxml:retrofit-converter", version.ref = "tik
 firebase-auth = { module = "com.google.firebase:firebase-auth", version.ref = "firebaseAuth" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-core = { module = "com.google.firebase:firebase-core", version.ref = "firebaseCore" }
+firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -137,5 +139,6 @@ tikxml-kapt = [
 firebase = [
     "firebase-bom",
     "firebase-core",
-    "firebase-auth"
+    "firebase-auth",
+    "firebase-firestore-ktx"
 ]

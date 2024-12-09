@@ -77,7 +77,9 @@ data class EventUiModel(
      * IS_FREE
      * ex) 유료, 무료
      */
-    val isFree: Boolean = true
+    val isFree: Boolean = true,
+
+    val isFavorite: Boolean = false
 )
 
 fun EventUiModel.isHappeningAt(dateString: String) : Boolean{

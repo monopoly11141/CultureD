@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.cultured.feature_event.data.model.EventModel
 import com.example.cultured.feature_event.data.model.toEventUiModel
 import com.example.cultured.feature_event.domain.repository.EventRepository
+import com.example.cultured.feature_event.presentation.model.EventUiModel
 import com.example.cultured.feature_event.presentation.model.isHappeningAt
 import com.example.cultured.util.DateUtil.TODAY_DATE
 import com.example.cultured.util.DateUtil.getNDaysAgo
@@ -93,13 +94,16 @@ class EventListViewModel @Inject constructor(
                 onTypeClick(action.type)
             }
 
+            is EventListAction.OnItemFavoriteClick -> {
+                onItemFavoriteClick(action.eventUiModel)
+            }
+
             is EventListAction.OnLogoutClick -> {
                 onLogoutClick()
             }
 
         }
     }
-
 
     private fun onSearchQueryChange(searchQuery: String) {
 
@@ -145,6 +149,29 @@ class EventListViewModel @Inject constructor(
             )
         }
     }
+
+    private fun onItemFavoriteClick(eventUiModel: EventUiModel) {
+        var entireEventUiModelSet = _state.value.entireEventUiModelSet.toMutableSet()
+
+        entireEventUiModelSet = entireEventUiModelSet.map {
+            if(it == eventUiModel) {
+                var foundEventUiModel = entireEventUiModelSet.find { it == eventUiModel }
+                foundEventUiModel = foundEventUiModel!!.copy(
+                    isFavorite = !foundEventUiModel.isFavorite
+                )
+                foundEventUiModel
+            }else {
+                it
+            }
+        }.toMutableSet()
+
+        _state.update{
+            it.copy(
+                entireEventUiModelSet = entireEventUiModelSet
+            )
+        }
+    }
+
 
     private fun onLogoutClick() {
         firebaseAuth.signOut()

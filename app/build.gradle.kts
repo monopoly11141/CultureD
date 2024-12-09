@@ -83,6 +83,6 @@ dependencies {
     //landscapist coil
     implementation(libs.bundles.landscapist.coil)
 
-//firebase
+    //firebase
     implementation(libs.bundles.firebase)
 }

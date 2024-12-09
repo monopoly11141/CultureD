@@ -158,6 +158,9 @@ fun EventListScreen(
                     },
                     onTypeClick = { typeItem ->
                         onAction.invoke(EventListAction.OnTypeClick(typeItem))
+                    },
+                    onFavoriteIconClick = {
+                        onAction.invoke(EventListAction.OnItemFavoriteClick(eventUiModel))
                     }
                 )
 

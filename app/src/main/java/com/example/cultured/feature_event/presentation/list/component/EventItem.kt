@@ -123,7 +123,7 @@ fun EventItem(
             ) {
                 IconButton(onClick = { onFavoriteIconClick() }) {
                     Icon(
-                        imageVector = if (eventUiModel.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                        imageVector = if (eventUiModel.isFavorite) Icons.Outlined.Favorite else Icons.Outlined.FavoriteBorder,
                         contentDescription = if (eventUiModel.isFavorite) "즐겨찾기 해제하기" else "즐겨찾기 하기",
                         tint = MaterialTheme.colorScheme.primary
                     )

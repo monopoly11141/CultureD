@@ -21,7 +21,6 @@ fun Navigation(
             )
         }
 
-
         composable(Screen.LoginScreen.route) {
             LoginScreenRoot(
                 navController = navHostController

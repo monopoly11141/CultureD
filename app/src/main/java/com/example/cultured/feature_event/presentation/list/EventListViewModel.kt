@@ -7,6 +7,7 @@ import com.example.cultured.feature_event.data.model.EventModel
 import com.example.cultured.feature_event.data.model.toEventUiModel
 import com.example.cultured.feature_event.domain.repository.EventRepository
 import com.example.cultured.feature_event.presentation.model.EventUiModel
+import com.example.cultured.feature_event.presentation.model.NavigationItem
 import com.example.cultured.feature_event.presentation.model.isHappeningAt
 import com.example.cultured.util.DateUtil.TODAY_DATE
 import com.example.cultured.util.DateUtil.getNDaysAgo
@@ -106,8 +107,37 @@ class EventListViewModel @Inject constructor(
                 onLogoutClick()
             }
 
+            is EventListAction.OnNavigationBarClick -> {
+                onNavigationBarClick(action.navigationItem)
+            }
         }
     }
+
+    private fun onNavigationBarClick(navigationItem: NavigationItem) {
+        when (navigationItem) {
+
+            NavigationItem.HOME -> {
+                _state.update {
+                    it.copy(
+                        searchQuery = "",
+                        displayingEventUiModelSet = state.value.entireEventUiModelSet
+                    )
+                }
+            }
+
+            NavigationItem.FAVORITE -> {
+                _state.update {
+                    it.copy(
+                        searchQuery = "",
+                        displayingEventUiModelSet = state.value.entireEventUiModelSet.filter { eventUiModel ->
+                            eventUiModel.isFavorite
+                        }.toSet()
+                    )
+                }
+            }
+        }
+    }
+
 
     private fun onSearchQueryChange(searchQuery: String) {
 

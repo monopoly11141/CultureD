@@ -1,5 +1,6 @@
 package com.example.cultured.feature_event.presentation.list
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cultured.feature_event.data.model.EventModel
@@ -11,6 +12,8 @@ import com.example.cultured.util.DateUtil.TODAY_DATE
 import com.example.cultured.util.DateUtil.getNDaysAgo
 import com.example.cultured.util.EventTypeUtil.EVERY_EVENT
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,7 +28,8 @@ import javax.inject.Inject
 @HiltViewModel
 class EventListViewModel @Inject constructor(
     private val repository: EventRepository,
-    private val firebaseAuth: FirebaseAuth
+    private val firebaseAuth: FirebaseAuth,
+    private val firestore: FirebaseFirestore
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(EventListState(searchTypeSet = setOf(EVERY_EVENT)))
@@ -154,9 +158,11 @@ class EventListViewModel @Inject constructor(
         var entireEventUiModelSet = _state.value.entireEventUiModelSet.toMutableSet()
         var displayingEventUiModelSet = _state.value.displayingEventUiModelSet.toMutableSet()
 
+        lateinit var foundEventUiModel: EventUiModel
+
         entireEventUiModelSet = entireEventUiModelSet.map {
             if (it == eventUiModel) {
-                var foundEventUiModel = it
+                foundEventUiModel = it
                 foundEventUiModel = foundEventUiModel.copy(
                     isFavorite = !foundEventUiModel.isFavorite
                 )
@@ -168,10 +174,6 @@ class EventListViewModel @Inject constructor(
 
         displayingEventUiModelSet = displayingEventUiModelSet.map {
             if (it == eventUiModel) {
-                var foundEventUiModel = it
-                foundEventUiModel = foundEventUiModel.copy(
-                    isFavorite = !foundEventUiModel.isFavorite
-                )
                 foundEventUiModel
             } else {
                 it
@@ -184,6 +186,39 @@ class EventListViewModel @Inject constructor(
                 displayingEventUiModelSet = displayingEventUiModelSet
             )
         }
+
+        when (foundEventUiModel.isFavorite) {
+            true -> {
+                firestore
+                    .collection(firebaseAuth.currentUser!!.uid)
+                    .add(foundEventUiModel)
+                    .addOnSuccessListener { documentReference ->
+                        Log.d("EventListViewModel", "Added with id: ${documentReference.id}")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.d("EventListViewModel", "Error :  $e")
+                    }
+            }
+
+            false -> {
+                firestore
+                    .collection(firebaseAuth.currentUser!!.uid)
+                    .get()
+                    .addOnSuccessListener { result ->
+                        for (document in result) {
+                            val eventUiModelFromDocument = document.toObject<EventUiModel>()
+                            if (eventUiModelFromDocument == foundEventUiModel) {
+                                firestore
+                                    .collection(firebaseAuth.currentUser!!.uid)
+                                    .document(document.id)
+                                    .delete()
+                            }
+                        }
+                    }
+            }
+        }
+
+
     }
 
 

@@ -143,7 +143,7 @@ class EventListViewModel @Inject constructor(
             }.toSet()
         }
 
-        _state.update{
+        _state.update {
             it.copy(
                 displayingEventUiModelSet = displayingEventUiModel
             )
@@ -152,22 +152,36 @@ class EventListViewModel @Inject constructor(
 
     private fun onItemFavoriteClick(eventUiModel: EventUiModel) {
         var entireEventUiModelSet = _state.value.entireEventUiModelSet.toMutableSet()
+        var displayingEventUiModelSet = _state.value.displayingEventUiModelSet.toMutableSet()
 
         entireEventUiModelSet = entireEventUiModelSet.map {
-            if(it == eventUiModel) {
-                var foundEventUiModel = entireEventUiModelSet.find { it == eventUiModel }
-                foundEventUiModel = foundEventUiModel!!.copy(
+            if (it == eventUiModel) {
+                var foundEventUiModel = it
+                foundEventUiModel = foundEventUiModel.copy(
                     isFavorite = !foundEventUiModel.isFavorite
                 )
                 foundEventUiModel
-            }else {
+            } else {
                 it
             }
         }.toMutableSet()
 
-        _state.update{
+        displayingEventUiModelSet = displayingEventUiModelSet.map {
+            if (it == eventUiModel) {
+                var foundEventUiModel = it
+                foundEventUiModel = foundEventUiModel.copy(
+                    isFavorite = !foundEventUiModel.isFavorite
+                )
+                foundEventUiModel
+            } else {
+                it
+            }
+        }.toMutableSet()
+
+        _state.update {
             it.copy(
-                entireEventUiModelSet = entireEventUiModelSet
+                entireEventUiModelSet = entireEventUiModelSet,
+                displayingEventUiModelSet = displayingEventUiModelSet
             )
         }
     }

@@ -21,6 +21,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -46,33 +48,44 @@ class EventListViewModel @Inject constructor(
 
     private fun initState() {
         for (i in 0..365) {
-
             val eventCall = repository.getEventApi().getEventModelWithDate(TODAY_DATE.getNDaysAgo(i))
             eventCall.enqueue(object : Callback<EventModel> {
                 override fun onResponse(eventModelCall: Call<EventModel>, response: Response<EventModel>) {
                     if (response.isSuccessful) {
                         try {
-                            val eventUiModelSet = _state.value.entireEventUiModelSet.toMutableSet()
-                            val searchTypeSet = _state.value.searchTypeSet.toMutableSet()
                             response.body()?.let { body ->
                                 body.eventList.map { event -> event.toEventUiModel() }
                                     .forEach { eventUiModel ->
                                         if (eventUiModel.isHappeningAt(TODAY_DATE)) {
-                                            eventUiModelSet.add(eventUiModel)
-                                            eventUiModel.typeList.forEach { type ->
-                                                searchTypeSet.add(type)
+                                            var thisEventUiModel = eventUiModel
+                                            viewModelScope.launch {
+                                                firestore
+                                                    .collection(firebaseAuth.currentUser!!.uid)
+                                                    .get()
+                                                    .addOnSuccessListener { result ->
+                                                        for (document in result) {
+                                                            val eventUiModelFromDocument =
+                                                                document.toObject<EventUiModel>()
+                                                            if (thisEventUiModel.title == eventUiModelFromDocument.title
+                                                                && thisEventUiModel.startDate == eventUiModelFromDocument.startDate
+                                                                && thisEventUiModel.endDate == eventUiModelFromDocument.endDate
+                                                            ) {
+                                                                thisEventUiModel = eventUiModelFromDocument
+                                                                break
+                                                            }
+                                                        }
+                                                    }.await()
+
+                                                _state.update {
+                                                    it.copy(
+                                                        entireEventUiModelSet = _state.value.entireEventUiModelSet.plus(thisEventUiModel).sortedByDescending { it.startDate }.toSet(),
+                                                        displayingEventUiModelSet = _state.value.entireEventUiModelSet,
+                                                        searchTypeSet = _state.value.searchTypeSet.plus(eventUiModel.typeList.toList())
+                                                    )
+                                                }
                                             }
                                         }
                                     }
-                            }
-
-                            _state.update {
-                                it.copy(
-                                    entireEventUiModelSet = eventUiModelSet.sortedByDescending { eventUiModel -> eventUiModel.startDate }
-                                        .toSet(),
-                                    displayingEventUiModelSet = _state.value.entireEventUiModelSet,
-                                    searchTypeSet = searchTypeSet.sortedBy { searchType -> searchType }.toSet()
-                                )
                             }
                         } catch (e: Exception) {
                             e.printStackTrace()
@@ -86,6 +99,7 @@ class EventListViewModel @Inject constructor(
 
             })
         }
+
 
     }
 

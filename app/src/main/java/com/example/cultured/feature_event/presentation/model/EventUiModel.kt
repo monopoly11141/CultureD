@@ -1,5 +1,6 @@
 package com.example.cultured.feature_event.presentation.model
 
+import com.google.firebase.firestore.PropertyName
 import java.time.LocalDate
 
 data class EventUiModel(
@@ -77,8 +78,10 @@ data class EventUiModel(
      * IS_FREE
      * ex) 유료, 무료
      */
+    @get:PropertyName("isFree")
     val isFree: Boolean = true,
 
+    @get:PropertyName("isFavorite")
     val isFavorite: Boolean = false
 )
 

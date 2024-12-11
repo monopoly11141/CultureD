@@ -3,12 +3,12 @@ package com.example.cultured.feature_event.presentation.list
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.cultured.core.presentation.model.EventUiModel
+import com.example.cultured.core.presentation.model.isHappeningAt
 import com.example.cultured.feature_event.data.model.EventModel
 import com.example.cultured.feature_event.data.model.toEventUiModel
 import com.example.cultured.feature_event.domain.repository.EventRepository
-import com.example.cultured.core.presentation.model.EventUiModel
 import com.example.cultured.feature_event.presentation.model.NavigationItem
-import com.example.cultured.core.presentation.model.isHappeningAt
 import com.example.cultured.util.DateUtil.TODAY_DATE
 import com.example.cultured.util.DateUtil.getNDaysAgo
 import com.example.cultured.util.EventTypeUtil.EVERY_EVENT
@@ -51,46 +51,58 @@ class EventListViewModel @Inject constructor(
             val eventCall = repository.getEventApi().getEventModelWithDate(TODAY_DATE.getNDaysAgo(i))
             eventCall.enqueue(object : Callback<EventModel> {
                 override fun onResponse(eventModelCall: Call<EventModel>, response: Response<EventModel>) {
-                    if (response.isSuccessful) {
-                        try {
-                            response.body()?.let { body ->
-                                body.eventList.map { event -> event.toEventUiModel() }
-                                    .forEach { eventUiModel ->
-                                        if (eventUiModel.isHappeningAt(TODAY_DATE)) {
-                                            var thisEventUiModel = eventUiModel
-                                            viewModelScope.launch {
-                                                firestore
-                                                    .collection(firebaseAuth.currentUser!!.uid)
-                                                    .get()
-                                                    .addOnSuccessListener { result ->
-                                                        for (document in result) {
-                                                            val eventUiModelFromDocument =
-                                                                document.toObject<EventUiModel>()
-                                                            if (thisEventUiModel.title == eventUiModelFromDocument.title
-                                                                && thisEventUiModel.startDate == eventUiModelFromDocument.startDate
-                                                                && thisEventUiModel.endDate == eventUiModelFromDocument.endDate
-                                                            ) {
-                                                                thisEventUiModel = eventUiModelFromDocument
-                                                                break
-                                                            }
-                                                        }
-                                                    }.await()
+                    if (!response.isSuccessful) {
+                        throw Error("Error happened")
+                    }
 
-                                                _state.update {
-                                                    it.copy(
-                                                        entireEventUiModelSet = _state.value.entireEventUiModelSet.plus(thisEventUiModel).sortedByDescending { it.startDate }.toSet(),
-                                                        displayingEventUiModelSet = _state.value.entireEventUiModelSet,
-                                                        searchTypeSet = _state.value.searchTypeSet.plus(eventUiModel.typeList.toList())
-                                                    )
+                    try {
+                        response.body()?.let { body ->
+                            body.eventList.map { event -> event.toEventUiModel() }
+                                .forEach { eventUiModel ->
+
+                                    if (!eventUiModel.isHappeningAt(TODAY_DATE)) {
+                                        return@forEach
+                                    }
+
+                                    var thisEventUiModel = eventUiModel
+
+                                    viewModelScope.launch {
+                                        firestore
+                                            .collection(firebaseAuth.currentUser!!.uid)
+                                            .document(thisEventUiModel.hashCode().toString())
+                                            .get()
+                                            .addOnCompleteListener { task ->
+                                                val document = task.result
+                                                if (task.isSuccessful) {
+                                                    if (document != null) {
+                                                        if (document.exists()) {
+                                                            thisEventUiModel = thisEventUiModel.copy(
+                                                                isFavorite = true
+                                                            )
+                                                            Log.d("TAG", "Document exist.")
+                                                        }
+                                                    }
                                                 }
-                                            }
+
+                                            }.await()
+
+                                        _state.update {
+                                            it.copy(
+                                                entireEventUiModelSet = _state.value.entireEventUiModelSet.plus(
+                                                    thisEventUiModel
+                                                ).sortedByDescending { eventUiModel -> eventUiModel.startDate }.toSet(),
+                                                displayingEventUiModelSet = _state.value.entireEventUiModelSet,
+                                                searchTypeSet = _state.value.searchTypeSet.plus(eventUiModel.typeList.toList())
+                                            )
                                         }
                                     }
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
+                                }
+
                         }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
+
                 }
 
                 override fun onFailure(eventModelCall: Call<EventModel>, throwable: Throwable) {
@@ -204,6 +216,7 @@ class EventListViewModel @Inject constructor(
 
         lateinit var foundEventUiModel: EventUiModel
 
+
         entireEventUiModelSet = entireEventUiModelSet.map {
             if (it == eventUiModel) {
                 foundEventUiModel = it
@@ -230,14 +243,18 @@ class EventListViewModel @Inject constructor(
                 displayingEventUiModelSet = displayingEventUiModelSet
             )
         }
+        val firestoreDocumentId = foundEventUiModel.copy(
+            isFavorite = false
+        ).hashCode().toString()
 
         when (foundEventUiModel.isFavorite) {
             true -> {
                 firestore
                     .collection(firebaseAuth.currentUser!!.uid)
-                    .add(foundEventUiModel)
+                    .document(firestoreDocumentId)
+                    .set(foundEventUiModel)
                     .addOnSuccessListener { documentReference ->
-                        Log.d("EventListViewModel", "Added with id: ${documentReference.id}")
+                        Log.d("EventListViewModel", "Added with id: ${documentReference}")
                     }
                     .addOnFailureListener { e ->
                         Log.d("EventListViewModel", "Error :  $e")
@@ -247,17 +264,18 @@ class EventListViewModel @Inject constructor(
             false -> {
                 firestore
                     .collection(firebaseAuth.currentUser!!.uid)
-                    .get()
+                    .document(firestoreDocumentId)
+                    .delete()
                     .addOnSuccessListener { result ->
-                        for (document in result) {
-                            val eventUiModelFromDocument = document.toObject<EventUiModel>()
-                            if (eventUiModelFromDocument == foundEventUiModel) {
-                                firestore
-                                    .collection(firebaseAuth.currentUser!!.uid)
-                                    .document(document.id)
-                                    .delete()
-                            }
-                        }
+//                        for (document in result) {
+//                            val eventUiModelFromDocument = document.toObject<EventUiModel>()
+//                            if (eventUiModelFromDocument == foundEventUiModel) {
+//                                firestore
+//                                    .collection(firebaseAuth.currentUser!!.uid)
+//                                    .document(document.id)
+//                                    .delete()
+//                            }
+//                        }
                     }
             }
         }

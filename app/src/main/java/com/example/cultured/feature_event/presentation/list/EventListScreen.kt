@@ -63,7 +63,6 @@ fun EventListScreen(
     state: EventListState,
     onAction: (EventListAction) -> Unit
 ) {
-    val uriHandler = LocalUriHandler.current
     Scaffold(
         modifier = modifier
             .fillMaxSize(),
@@ -143,10 +142,12 @@ fun EventListScreen(
                 .padding(paddingValues)
         ) {
             items(state.displayingEventUiModelSet.toList()) { eventUiModel ->
+                //val uriHandler = LocalUriHandler.current
                 EventItem(
                     eventUiModel = eventUiModel,
                     onItemClick = {
-                        uriHandler.openUri(eventUiModel.eventUrl)
+                        navController.navigate(Screen.CommentScreen.route)
+                        //uriHandler.openUri(eventUiModel.eventUrl)
                     },
                     onTypeClick = { typeItem ->
                         onAction.invoke(EventListAction.OnTypeClick(typeItem))

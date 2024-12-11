@@ -1,5 +1,6 @@
 package com.example.cultured.core.presentation.model
 
+import com.google.firebase.firestore.Exclude
 import com.google.firebase.firestore.PropertyName
 import java.time.LocalDate
 
@@ -81,7 +82,7 @@ data class EventUiModel(
     @get:PropertyName("isFree")
     val isFree: Boolean = true,
 
-    @get:PropertyName("isFavorite")
+    @get:Exclude
     val isFavorite: Boolean = false
 )
 

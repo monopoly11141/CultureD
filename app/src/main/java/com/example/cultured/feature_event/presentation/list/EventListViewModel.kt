@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cultured.core.presentation.model.EventUiModel
 import com.example.cultured.core.presentation.model.isHappeningAt
+import com.example.cultured.core.presentation.model.toSha245EncodedString
 import com.example.cultured.feature_event.data.model.EventModel
 import com.example.cultured.feature_event.data.model.toEventUiModel
 import com.example.cultured.feature_event.domain.repository.EventRepository
@@ -14,7 +15,6 @@ import com.example.cultured.util.DateUtil.getNDaysAgo
 import com.example.cultured.util.EventTypeUtil.EVERY_EVENT
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.toObject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -69,7 +69,7 @@ class EventListViewModel @Inject constructor(
                                     viewModelScope.launch {
                                         firestore
                                             .collection(firebaseAuth.currentUser!!.uid)
-                                            .document(thisEventUiModel.hashCode().toString())
+                                            .document(thisEventUiModel.toSha245EncodedString())
                                             .get()
                                             .addOnCompleteListener { task ->
                                                 val document = task.result
@@ -79,7 +79,6 @@ class EventListViewModel @Inject constructor(
                                                             thisEventUiModel = thisEventUiModel.copy(
                                                                 isFavorite = true
                                                             )
-                                                            Log.d("TAG", "Document exist.")
                                                         }
                                                     }
                                                 }
@@ -90,7 +89,10 @@ class EventListViewModel @Inject constructor(
                                             it.copy(
                                                 entireEventUiModelSet = _state.value.entireEventUiModelSet.plus(
                                                     thisEventUiModel
-                                                ).sortedByDescending { eventUiModel -> eventUiModel.startDate }.toSet(),
+                                                )
+                                                    .sortedWith(compareByDescending<EventUiModel> { eventUiModel -> eventUiModel.startDate }
+                                                        .thenBy { eventUiModel -> eventUiModel.title })
+                                                    .toSet(),
                                                 displayingEventUiModelSet = _state.value.entireEventUiModelSet,
                                                 searchTypeSet = _state.value.searchTypeSet.plus(eventUiModel.typeList.toList())
                                             )
@@ -245,7 +247,7 @@ class EventListViewModel @Inject constructor(
         }
         val firestoreDocumentId = foundEventUiModel.copy(
             isFavorite = false
-        ).hashCode().toString()
+        ).toSha245EncodedString()
 
         when (foundEventUiModel.isFavorite) {
             true -> {
@@ -266,21 +268,8 @@ class EventListViewModel @Inject constructor(
                     .collection(firebaseAuth.currentUser!!.uid)
                     .document(firestoreDocumentId)
                     .delete()
-                    .addOnSuccessListener { result ->
-//                        for (document in result) {
-//                            val eventUiModelFromDocument = document.toObject<EventUiModel>()
-//                            if (eventUiModelFromDocument == foundEventUiModel) {
-//                                firestore
-//                                    .collection(firebaseAuth.currentUser!!.uid)
-//                                    .document(document.id)
-//                                    .delete()
-//                            }
-//                        }
-                    }
             }
         }
-
-
     }
 
 

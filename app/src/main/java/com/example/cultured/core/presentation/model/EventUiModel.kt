@@ -1,5 +1,6 @@
 package com.example.cultured.core.presentation.model
 
+import com.example.cultured.core.presentation.util.toSha256EncodedString
 import com.google.firebase.firestore.Exclude
 import com.google.firebase.firestore.PropertyName
 import java.time.LocalDate
@@ -93,4 +94,8 @@ fun EventUiModel.isHappeningAt(dateString: String) : Boolean{
     val dateStringLocalDate = LocalDate.parse(dateString)
 
     return dateStringLocalDate in startLocalDate..endLocalDate
+}
+
+fun EventUiModel.toSha245EncodedString() : String {
+    return this.toString().toSha256EncodedString()
 }

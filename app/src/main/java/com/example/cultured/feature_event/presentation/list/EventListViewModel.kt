@@ -6,9 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.cultured.feature_event.data.model.EventModel
 import com.example.cultured.feature_event.data.model.toEventUiModel
 import com.example.cultured.feature_event.domain.repository.EventRepository
-import com.example.cultured.feature_event.presentation.model.EventUiModel
+import com.example.cultured.core.presentation.model.EventUiModel
 import com.example.cultured.feature_event.presentation.model.NavigationItem
-import com.example.cultured.feature_event.presentation.model.isHappeningAt
+import com.example.cultured.core.presentation.model.isHappeningAt
 import com.example.cultured.util.DateUtil.TODAY_DATE
 import com.example.cultured.util.DateUtil.getNDaysAgo
 import com.example.cultured.util.EventTypeUtil.EVERY_EVENT

@@ -1,6 +1,6 @@
 package com.example.cultured.feature_event.presentation.list
 
-import com.example.cultured.feature_event.presentation.model.EventUiModel
+import com.example.cultured.core.presentation.model.EventUiModel
 import com.example.cultured.feature_event.presentation.model.NavigationItem
 
 sealed interface EventListAction {

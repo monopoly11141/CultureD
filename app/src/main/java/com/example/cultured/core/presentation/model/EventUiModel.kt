@@ -1,4 +1,4 @@
-package com.example.cultured.feature_event.presentation.model
+package com.example.cultured.core.presentation.model
 
 import com.google.firebase.firestore.PropertyName
 import java.time.LocalDate

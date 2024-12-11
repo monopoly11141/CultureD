@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Icon
@@ -30,7 +29,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cultured.R
-import com.example.cultured.feature_event.presentation.model.EventUiModel
+import com.example.cultured.core.presentation.model.EventUiModel
 import com.example.cultured.feature_event.presentation.preview.EventUiModelProvider
 import com.example.cultured.ui.theme.AppTypography
 import com.example.cultured.ui.theme.CultureDTheme

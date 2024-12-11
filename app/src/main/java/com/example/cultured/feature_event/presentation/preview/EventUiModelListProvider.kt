@@ -1,7 +1,7 @@
 package com.example.cultured.feature_event.presentation.preview
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import com.example.cultured.feature_event.presentation.model.EventUiModel
+import com.example.cultured.core.presentation.model.EventUiModel
 
 class EventUiModelListProvider : PreviewParameterProvider<List<EventUiModel>> {
     override val values: Sequence<List<EventUiModel>>

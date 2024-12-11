@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.cultured.feature_comment.presentation.CommentScreenRoot
 import com.example.cultured.feature_event.presentation.list.EventListScreenRoot
 import com.example.cultured.feature_login.presentation.login.LoginScreenRoot
 
@@ -23,6 +24,12 @@ fun Navigation(
 
         composable(Screen.LoginScreen.route) {
             LoginScreenRoot(
+                navController = navHostController
+            )
+        }
+
+        composable(Screen.CommentScreen.route) {
+            CommentScreenRoot(
                 navController = navHostController
             )
         }

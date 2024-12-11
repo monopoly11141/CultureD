@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,7 +33,7 @@ import com.example.cultured.feature_event.presentation.list.component.EventItem
 import com.example.cultured.feature_event.presentation.list.component.EventSearchBar
 import com.example.cultured.feature_event.presentation.list.component.EventTagFlowRow
 import com.example.cultured.feature_event.presentation.list.component.EventTopAppBar
-import com.example.cultured.feature_event.presentation.model.EventUiModel
+import com.example.cultured.core.presentation.model.EventUiModel
 import com.example.cultured.feature_event.presentation.model.NavigationItem
 import com.example.cultured.feature_event.presentation.preview.EventUiModelListProvider
 import com.example.cultured.navigation.Screen

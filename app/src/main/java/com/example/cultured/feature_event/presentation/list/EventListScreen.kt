@@ -1,10 +1,13 @@
 package com.example.cultured.feature_event.presentation.list
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,14 +15,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -37,9 +39,6 @@ import com.example.cultured.feature_event.presentation.model.NavigationItem
 import com.example.cultured.feature_event.presentation.preview.EventUiModelListProvider
 import com.example.cultured.navigation.Screen
 import com.example.cultured.ui.theme.CultureDTheme
-import com.google.gson.Gson
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 @Composable
 fun EventListScreenRoot(
@@ -67,6 +66,7 @@ fun EventListScreen(
     Scaffold(
         modifier = modifier
             .fillMaxSize(),
+        contentWindowInsets = WindowInsets(0.dp),
         topBar = {
             Column(
 
@@ -105,64 +105,69 @@ fun EventListScreen(
                 )
 
             }
-
-        },
-        bottomBar = {
-            NavigationBar(
-                modifier = modifier
-                    .fillMaxWidth()
-            ) {
-                NavigationBarItem(
-                    selected = state.selectedDisplay == "home",
-                    onClick = { onAction.invoke(EventListAction.OnNavigationBarClick(NavigationItem.HOME)) },
-                    icon = {
-                        Icon(
-                            Icons.Outlined.Home,
-                            "home"
-                        )
-                    }
-                )
-
-                NavigationBarItem(
-                    selected = state.selectedDisplay == "favorite",
-                    onClick = { onAction.invoke(EventListAction.OnNavigationBarClick(NavigationItem.FAVORITE)) },
-                    icon = {
-                        Icon(
-                            Icons.Outlined.FavoriteBorder,
-                            "favorite"
-                        )
-                    }
-                )
-            }
         }
     ) { paddingValues ->
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
+        Column(
+            modifier = modifier
                 .padding(paddingValues)
+                .fillMaxSize()
         ) {
-            items(state.displayingEventUiModelSet.toList()) { eventUiModel ->
-                EventItem(
-                    eventUiModel = eventUiModel,
-                    onItemClick = {
-                        navController.navigate(eventUiModel)
-                    },
-                    onTypeClick = { typeItem ->
-                        onAction.invoke(EventListAction.OnTypeClick(typeItem))
-                    },
-                    onFavoriteIconClick = {
-                        onAction.invoke(EventListAction.OnItemFavoriteClick(eventUiModel))
-                    }
-                )
+            LazyColumn(
+                modifier = modifier
+                    .weight(1f)
+            ) {
+                items(state.displayingEventUiModelSet.toList()) { eventUiModel ->
+                    EventItem(
+                        eventUiModel = eventUiModel,
+                        onItemClick = {
+                            navController.navigate(eventUiModel)
+                        },
+                        onTypeClick = { typeItem ->
+                            onAction.invoke(EventListAction.OnTypeClick(typeItem))
+                        },
+                        onFavoriteIconClick = {
+                            onAction.invoke(EventListAction.OnItemFavoriteClick(eventUiModel))
+                        }
+                    )
 
-                HorizontalDivider(
-                    color = MaterialTheme.colorScheme.primary
-                )
+                    HorizontalDivider(
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+
+            Row(
+                modifier = modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = { onAction.invoke(EventListAction.OnNavigationBarClick(NavigationItem.HOME)) },
+                    modifier = Modifier
+                        .weight(1f)
+                ) {
+                    Icon(
+                        Icons.Outlined.Home,
+                        "home"
+                    )
+                }
+
+                IconButton(
+                    onClick = { onAction.invoke(EventListAction.OnNavigationBarClick(NavigationItem.FAVORITE)) },
+                    modifier = Modifier
+                        .weight(1f)
+                ) {
+                    Icon(
+                        Icons.Outlined.FavoriteBorder,
+                        "favorite"
+                    )
+                }
             }
         }
-
     }
+
 }
 
 @PreviewLightDark

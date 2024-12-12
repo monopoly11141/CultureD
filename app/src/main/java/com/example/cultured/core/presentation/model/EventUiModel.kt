@@ -3,8 +3,10 @@ package com.example.cultured.core.presentation.model
 import com.example.cultured.core.presentation.util.toSha256EncodedString
 import com.google.firebase.firestore.Exclude
 import com.google.firebase.firestore.PropertyName
+import kotlinx.serialization.Serializable
 import java.time.LocalDate
 
+@Serializable
 data class EventUiModel(
     /**
      *  CODENAME
@@ -87,7 +89,7 @@ data class EventUiModel(
     val isFavorite: Boolean = false
 )
 
-fun EventUiModel.isHappeningAt(dateString: String) : Boolean{
+fun EventUiModel.isHappeningAt(dateString: String): Boolean {
     val startLocalDate = LocalDate.parse(this.startDate)
     val endLocalDate = LocalDate.parse(this.endDate)
 
@@ -96,6 +98,6 @@ fun EventUiModel.isHappeningAt(dateString: String) : Boolean{
     return dateStringLocalDate in startLocalDate..endLocalDate
 }
 
-fun EventUiModel.toSha245EncodedString() : String {
+fun EventUiModel.toSha245EncodedString(): String {
     return this.toString().toSha256EncodedString()
 }

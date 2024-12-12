@@ -5,6 +5,7 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("kotlin-kapt")
     id("com.google.gms.google-services")
+    kotlin("plugin.serialization")
 }
 
 android {
@@ -85,4 +86,5 @@ dependencies {
 
     //firebase
     implementation(libs.bundles.firebase)
+
 }

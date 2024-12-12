@@ -21,7 +21,6 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -29,15 +28,18 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.cultured.core.presentation.model.EventUiModel
 import com.example.cultured.feature_event.presentation.list.component.EventItem
 import com.example.cultured.feature_event.presentation.list.component.EventSearchBar
 import com.example.cultured.feature_event.presentation.list.component.EventTagFlowRow
 import com.example.cultured.feature_event.presentation.list.component.EventTopAppBar
-import com.example.cultured.core.presentation.model.EventUiModel
 import com.example.cultured.feature_event.presentation.model.NavigationItem
 import com.example.cultured.feature_event.presentation.preview.EventUiModelListProvider
 import com.example.cultured.navigation.Screen
 import com.example.cultured.ui.theme.CultureDTheme
+import com.google.gson.Gson
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 @Composable
 fun EventListScreenRoot(
@@ -146,7 +148,7 @@ fun EventListScreen(
                 EventItem(
                     eventUiModel = eventUiModel,
                     onItemClick = {
-                        navController.navigate(Screen.CommentScreen.route)
+                        navController.navigate(eventUiModel)
                         //uriHandler.openUri(eventUiModel.eventUrl)
                     },
                     onTypeClick = { typeItem ->

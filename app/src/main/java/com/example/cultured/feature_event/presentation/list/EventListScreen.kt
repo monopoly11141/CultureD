@@ -57,7 +57,6 @@ fun EventListScreenRoot(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun EventListScreen(
     modifier: Modifier = Modifier,
@@ -144,12 +143,10 @@ fun EventListScreen(
                 .padding(paddingValues)
         ) {
             items(state.displayingEventUiModelSet.toList()) { eventUiModel ->
-                //val uriHandler = LocalUriHandler.current
                 EventItem(
                     eventUiModel = eventUiModel,
                     onItemClick = {
                         navController.navigate(eventUiModel)
-                        //uriHandler.openUri(eventUiModel.eventUrl)
                     },
                     onTypeClick = { typeItem ->
                         onAction.invoke(EventListAction.OnTypeClick(typeItem))

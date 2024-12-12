@@ -1,4 +1,4 @@
-package com.example.cultured.feature_event.presentation.preview
+package com.example.cultured.core.presentation.preview
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.example.cultured.core.presentation.model.EventUiModel

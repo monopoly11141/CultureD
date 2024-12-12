@@ -20,20 +20,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.cultured.R
+import com.example.cultured.core.presentation.component.EventImage
 import com.example.cultured.core.presentation.model.EventUiModel
-import com.example.cultured.feature_event.presentation.preview.EventUiModelProvider
+import com.example.cultured.core.presentation.preview.EventUiModelProvider
 import com.example.cultured.ui.theme.AppTypography
 import com.example.cultured.ui.theme.CultureDTheme
-import com.skydoves.landscapist.coil.CoilImage
 
 @Composable
 fun EventItem(
@@ -48,16 +45,13 @@ fun EventItem(
             .background(MaterialTheme.colorScheme.background)
             .clickable { onItemClick() }
     ) {
-        CoilImage(
-            imageModel = eventUiModel.imageUrl,
-            placeHolder = painterResource(id = R.drawable.loading_image),
-            error = painterResource(id = R.drawable.image_not_found),
-            modifier = Modifier
+        EventImage(
+            modifier = modifier
                 .fillMaxWidth(0.3f)
                 .fillMaxHeight(0.3f)
                 .padding(4.dp),
-            contentDescription = "${eventUiModel.title} 대표 이미지",
-            contentScale = ContentScale.Fit
+            imageUrl = eventUiModel.imageUrl,
+            contentDescription = "${eventUiModel.title} 이미지"
         )
 
         Column {

@@ -18,10 +18,16 @@ import javax.inject.Inject
 class CommentViewModel @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val firebaseAuth: FirebaseAuth,
-    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val _state = MutableStateFlow(CommentState())
     val state = _state
+        .onStart {
+            _state.update {
+                it.copy(
+                    currentUser = firebaseAuth.currentUser?.uid ?: throw Exception("User not logged in")
+                )
+            }
+        }
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000L),

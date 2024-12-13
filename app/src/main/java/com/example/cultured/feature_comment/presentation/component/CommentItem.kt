@@ -13,8 +13,9 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.cultured.core.presentation.preview.PreviewModel
+import com.example.cultured.core.presentation.preview.PreviewParameterProvider
 import com.example.cultured.feature_comment.presentation.model.CommentUiModel
-import com.example.cultured.feature_comment.presentation.preview.CommentUiModelProvider
 import com.example.cultured.ui.theme.CultureDTheme
 
 @Composable
@@ -61,10 +62,10 @@ fun CommentItem(
 
 @PreviewLightDark
 @Composable
-private fun CommentItemPreview(@PreviewParameter(CommentUiModelProvider::class) commentUiModel: CommentUiModel) {
+private fun CommentItemPreview(@PreviewParameter(PreviewParameterProvider::class) previewModel: PreviewModel) {
     CultureDTheme {
         CommentItem(
-            commentUiModel = commentUiModel,
+            commentUiModel = previewModel.commentUiModel,
             isCommentByCurrentUser = true
         )
     }

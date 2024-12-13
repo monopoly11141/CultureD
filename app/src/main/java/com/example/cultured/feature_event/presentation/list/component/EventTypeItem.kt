@@ -16,7 +16,8 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cultured.core.presentation.model.EventUiModel
-import com.example.cultured.core.presentation.preview.EventUiModelProvider
+import com.example.cultured.core.presentation.preview.PreviewModel
+import com.example.cultured.core.presentation.preview.PreviewParameterProvider
 import com.example.cultured.ui.theme.AppTypography
 import com.example.cultured.ui.theme.CultureDTheme
 
@@ -49,10 +50,10 @@ fun EventTypeItem(
 
 @PreviewLightDark
 @Composable
-private fun EventTypeItemPrev(@PreviewParameter(EventUiModelProvider::class) eventUiModel: EventUiModel) {
+private fun EventTypeItemPrev(@PreviewParameter(PreviewParameterProvider::class) previewModel: PreviewModel) {
     CultureDTheme {
         EventTypeItem(
-            typeString = eventUiModel.typeList[0],
+            typeString = previewModel.eventUiModel.typeList[0],
             onClick = {}
         )
     }

@@ -15,7 +15,8 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.sp
 import com.example.cultured.core.presentation.model.EventUiModel
-import com.example.cultured.core.presentation.preview.EventUiModelProvider
+import com.example.cultured.core.presentation.preview.PreviewModel
+import com.example.cultured.core.presentation.preview.PreviewParameterProvider
 import com.example.cultured.ui.theme.CultureDTheme
 
 @Composable
@@ -45,10 +46,10 @@ fun EventLocationItem(
 
 @PreviewLightDark
 @Composable
-private fun EventLocationItemPreview(@PreviewParameter(EventUiModelProvider::class) eventUiModel: EventUiModel) {
+private fun EventLocationItemPreview(@PreviewParameter(PreviewParameterProvider::class) previewModel: PreviewModel) {
     CultureDTheme {
         EventLocationItem(
-            location = eventUiModel.location
+            location = previewModel.eventUiModel.location
         )
     }
 }

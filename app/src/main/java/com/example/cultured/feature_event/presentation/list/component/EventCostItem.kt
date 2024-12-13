@@ -15,7 +15,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.sp
 import com.example.cultured.core.presentation.model.EventUiModel
-import com.example.cultured.core.presentation.preview.EventUiModelProvider
+import com.example.cultured.core.presentation.preview.PreviewModel
+import com.example.cultured.core.presentation.preview.PreviewParameterProvider
 import com.example.cultured.ui.theme.CultureDTheme
 
 @Composable
@@ -56,11 +57,11 @@ private fun getFeeString(
 
 @Preview
 @Composable
-private fun EventCostItemPreview(@PreviewParameter(EventUiModelProvider::class) eventUiModel: EventUiModel) {
+private fun EventCostItemPreview(@PreviewParameter(PreviewParameterProvider::class) previewModel: PreviewModel) {
     CultureDTheme {
         EventCostItem(
-            feeInformation = eventUiModel.feeInformation,
-            isFree = eventUiModel.isFree
+            feeInformation = previewModel.eventUiModel.feeInformation,
+            isFree =  previewModel.eventUiModel.isFree
         )
     }
 }

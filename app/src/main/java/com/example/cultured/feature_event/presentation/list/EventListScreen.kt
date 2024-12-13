@@ -31,12 +31,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.cultured.core.presentation.model.EventUiModel
+import com.example.cultured.core.presentation.preview.PreviewModel
+import com.example.cultured.core.presentation.preview.PreviewParameterProvider
 import com.example.cultured.feature_event.presentation.list.component.EventItem
 import com.example.cultured.feature_event.presentation.list.component.EventSearchBar
 import com.example.cultured.feature_event.presentation.list.component.EventTagFlowRow
 import com.example.cultured.feature_event.presentation.list.component.EventTopAppBar
 import com.example.cultured.feature_event.presentation.model.NavigationItem
-import com.example.cultured.feature_event.presentation.preview.EventUiModelListProvider
 import com.example.cultured.navigation.Screen
 import com.example.cultured.ui.theme.CultureDTheme
 
@@ -172,14 +173,14 @@ fun EventListScreen(
 
 @PreviewLightDark
 @Composable
-private fun EventListScreenPreview(@PreviewParameter(EventUiModelListProvider::class) eventUiModelList: List<EventUiModel>) {
+private fun EventListScreenPreview(@PreviewParameter(PreviewParameterProvider::class) previewModel: PreviewModel) {
     CultureDTheme {
         EventListScreen(
             navController = rememberNavController(),
             state = EventListState(
-                entireEventUiModelSet = eventUiModelList.toSet(),
-                displayingEventUiModelSet = eventUiModelList.toSet(),
-                searchTypeSet = eventUiModelList.map { it -> it.typeList }.flatten().toSet()
+                entireEventUiModelSet = previewModel.eventUiModelList.toSet(),
+                displayingEventUiModelSet = previewModel.eventUiModelList.toSet(),
+                searchTypeSet = previewModel.eventUiModelList.map { it -> it.typeList }.flatten().toSet()
             ),
             onAction = {}
         )

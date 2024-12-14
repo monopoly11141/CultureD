@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cultured.core.presentation.model.EventUiModel
-import com.example.cultured.core.presentation.model.isHappeningAt
 import com.example.cultured.core.presentation.model.isStartedAt
 import com.example.cultured.core.presentation.model.toSha245EncodedString
 import com.example.cultured.feature_event.data.model.EventModel
@@ -126,7 +125,15 @@ class EventListViewModel @Inject constructor(
                                                     .thenBy { eventUiModel -> eventUiModel.title })
                                                 .toSet(),
                                             displayingEventUiModelSet = _state.value.entireEventUiModelSet,
-                                            searchTypeSet = _state.value.searchTypeSet.plus(eventUiModel.typeList.toList()),
+                                            searchTypeSet = _state.value.searchTypeSet.plus(
+                                                eventUiModel.typeList.toList()
+                                            )
+                                                .sortedWith(
+                                                    compareBy(
+                                                        { type -> type != EVERY_EVENT },
+                                                        { type -> type })
+                                                )
+                                                .toSet(),
                                         )
                                     }
                                 }

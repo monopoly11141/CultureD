@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cultured.core.presentation.model.EventUiModel
+import com.example.cultured.core.presentation.model.changeFavoriteStatus
 import com.example.cultured.core.presentation.model.isStartedAt
 import com.example.cultured.core.presentation.model.toSha245EncodedString
 import com.example.cultured.feature_event.data.model.EventModel
@@ -90,7 +91,7 @@ class EventListViewModel @Inject constructor(
                     response.body()?.let { body ->
                         body.eventList.map { event -> event.toEventUiModel() }
                             .forEach { eventUiModel ->
-
+    
                                 if (!eventUiModel.isStartedAt(interestedDate)) {
                                     return@forEach
                                 }
@@ -113,7 +114,6 @@ class EventListViewModel @Inject constructor(
                                                     }
                                                 }
                                             }
-
                                         }.await()
 
                                     _state.update {
@@ -166,7 +166,8 @@ class EventListViewModel @Inject constructor(
                 _state.update {
                     it.copy(
                         searchQuery = "",
-                        displayingEventUiModelSet = state.value.entireEventUiModelSet
+                        displayingEventUiModelSet = state.value.entireEventUiModelSet,
+                        selectedDisplay = navigationItem.route
                     )
                 }
             }
@@ -175,9 +176,9 @@ class EventListViewModel @Inject constructor(
                 _state.update {
                     it.copy(
                         searchQuery = "",
-                        displayingEventUiModelSet = state.value.entireEventUiModelSet.filter { eventUiModel ->
-                            eventUiModel.isFavorite
-                        }.toSet()
+                        displayingEventUiModelSet = state.value.entireEventUiModelSet.filter { eventUiModel -> eventUiModel.isFavorite }
+                            .toSet(),
+                        selectedDisplay = navigationItem.route
                     )
                 }
             }
@@ -230,30 +231,23 @@ class EventListViewModel @Inject constructor(
     }
 
     private fun onItemFavoriteClick(eventUiModel: EventUiModel) {
+        updateUiOnItemFavoriteClick(eventUiModel)
+
+        updateFirestoreDbOnItemFavoriteClick(eventUiModel)
+    }
+
+    private fun updateUiOnItemFavoriteClick(eventUiModel: EventUiModel) {
         var entireEventUiModelSet = _state.value.entireEventUiModelSet.toMutableSet()
         var displayingEventUiModelSet = _state.value.displayingEventUiModelSet.toMutableSet()
 
-        lateinit var foundEventUiModel: EventUiModel
-
-
-        entireEventUiModelSet = entireEventUiModelSet.map {
-            if (it == eventUiModel) {
-                foundEventUiModel = it
-                foundEventUiModel = foundEventUiModel.copy(
-                    isFavorite = !foundEventUiModel.isFavorite
-                )
-                foundEventUiModel
-            } else {
-                it
-            }
+        val indexInEntireEventUiModelSet = entireEventUiModelSet.indexOf(eventUiModel)
+        entireEventUiModelSet = entireEventUiModelSet.toMutableList().apply {
+            this[indexInEntireEventUiModelSet] = eventUiModel.changeFavoriteStatus()
         }.toMutableSet()
 
-        displayingEventUiModelSet = displayingEventUiModelSet.map {
-            if (it == eventUiModel) {
-                foundEventUiModel
-            } else {
-                it
-            }
+        val indexInDisplayingEventUiModelSet = displayingEventUiModelSet.indexOf(eventUiModel)
+        displayingEventUiModelSet = displayingEventUiModelSet.toMutableList().apply {
+            this[indexInDisplayingEventUiModelSet] = eventUiModel.changeFavoriteStatus()
         }.toMutableSet()
 
         _state.update {
@@ -262,16 +256,19 @@ class EventListViewModel @Inject constructor(
                 displayingEventUiModelSet = displayingEventUiModelSet
             )
         }
-        val firestoreDocumentId = foundEventUiModel.copy(
+    }
+
+    private fun updateFirestoreDbOnItemFavoriteClick(eventUiModel: EventUiModel) {
+        val firestoreDocumentId = eventUiModel.copy(
             isFavorite = false
         ).toSha245EncodedString()
 
-        when (foundEventUiModel.isFavorite) {
+        when (!eventUiModel.isFavorite) {
             true -> {
                 firestore
                     .collection(firebaseAuth.currentUser!!.uid)
                     .document(firestoreDocumentId)
-                    .set(foundEventUiModel)
+                    .set(eventUiModel)
                     .addOnSuccessListener { documentReference ->
                         Log.d("EventListViewModel", "Added with id: ${documentReference}")
                     }

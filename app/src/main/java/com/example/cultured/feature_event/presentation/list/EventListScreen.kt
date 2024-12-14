@@ -40,6 +40,7 @@ import com.example.cultured.feature_event.presentation.list.component.EventTopAp
 import com.example.cultured.feature_event.presentation.model.NavigationItem
 import com.example.cultured.navigation.Screen
 import com.example.cultured.ui.theme.CultureDTheme
+import com.example.cultured.util.EventTypeUtil.EVERY_EVENT
 
 @Composable
 fun EventListScreenRoot(
@@ -111,7 +112,7 @@ fun EventListScreen(
         val lazyColumnState = rememberLazyListState()
         val isAtBottom = !lazyColumnState.canScrollForward
         LaunchedEffect(isAtBottom && state.dayBefore <= 365) {
-            if (isAtBottom && state.selectedDisplay == NavigationItem.HOME.route) {
+            if (isAtBottom && state.selectedDisplay == NavigationItem.HOME.route && state.selectedDisplay == EVERY_EVENT) {
                 onAction.invoke(EventListAction.OnGetMoreEventUiModel)
             }
         }

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cultured.core.presentation.model.EventUiModel
 import com.example.cultured.core.presentation.model.changeFavoriteStatus
+import com.example.cultured.core.presentation.model.isHappeningAt
 import com.example.cultured.core.presentation.model.isStartedAt
 import com.example.cultured.core.presentation.model.toSha245EncodedString
 import com.example.cultured.feature_event.data.model.EventModel
@@ -39,7 +40,9 @@ class EventListViewModel @Inject constructor(
     private val _state = MutableStateFlow(EventListState(searchTypeSet = setOf(EVERY_EVENT)))
     val state = _state
         .onStart {
-            onGetMoreEventUiModel()
+            repeat(7) {
+                onGetMoreEventUiModel()
+            }
         }
         .stateIn(
             viewModelScope,
@@ -91,8 +94,8 @@ class EventListViewModel @Inject constructor(
                     response.body()?.let { body ->
                         body.eventList.map { event -> event.toEventUiModel() }
                             .forEach { eventUiModel ->
-    
-                                if (!eventUiModel.isStartedAt(interestedDate)) {
+
+                                if (!eventUiModel.isStartedAt(interestedDate) or !eventUiModel.isHappeningAt(TODAY_DATE)) {
                                     return@forEach
                                 }
 
@@ -129,10 +132,8 @@ class EventListViewModel @Inject constructor(
                                                 eventUiModel.typeList.toList()
                                             )
                                                 .sortedWith(
-                                                    compareBy(
-                                                        { type -> type != EVERY_EVENT },
-                                                        { type -> type })
-                                                )
+                                                    compareByDescending<String> { type -> type == EVERY_EVENT }
+                                                        .thenBy { type -> type })
                                                 .toSet(),
                                         )
                                     }

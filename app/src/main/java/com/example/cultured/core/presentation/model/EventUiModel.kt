@@ -89,6 +89,15 @@ data class EventUiModel(
     val isFavorite: Boolean = false
 )
 
+fun EventUiModel.isHappeningAt(dateString: String): Boolean {
+    val startLocalDate = LocalDate.parse(this.startDate)
+    val endLocalDate = LocalDate.parse(this.endDate)
+
+    val dateStringLocalDate = LocalDate.parse(dateString)
+
+    return dateStringLocalDate in startLocalDate..endLocalDate
+}
+
 fun EventUiModel.isStartedAt(dateString: String): Boolean {
     val startLocalDate = LocalDate.parse(this.startDate)
     val dateStringLocalDate = LocalDate.parse(dateString)

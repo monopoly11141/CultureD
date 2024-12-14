@@ -8,4 +8,5 @@ data class EventListState(
     val searchQuery: String = "",
     val searchTypeSet: Set<String> = emptySet(),
     val selectedDisplay: String = "",
+    val dayBefore : Int = 0
 )

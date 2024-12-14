@@ -98,6 +98,13 @@ fun EventUiModel.isHappeningAt(dateString: String): Boolean {
     return dateStringLocalDate in startLocalDate..endLocalDate
 }
 
+fun EventUiModel.isStartedAt(dateString: String): Boolean {
+    val startLocalDate = LocalDate.parse(this.startDate)
+    val dateStringLocalDate = LocalDate.parse(dateString)
+
+    return dateStringLocalDate == startLocalDate
+}
+
 fun EventUiModel.toSha245EncodedString(): String {
     return this.toString().toSha256EncodedString()
 }

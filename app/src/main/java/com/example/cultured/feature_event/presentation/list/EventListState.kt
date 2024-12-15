@@ -7,6 +7,7 @@ data class EventListState(
     val displayingEventUiModelSet: Set<EventUiModel> = emptySet(),
     val searchQuery: String = "",
     val searchTypeSet: Set<String> = emptySet(),
+    val currentSearchType: String = "",
     val selectedDisplay: String = "",
     val dayBefore : Int = 0
 )

@@ -1,5 +1,6 @@
 package com.example.cultured.feature_event.presentation.list
 
+import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -37,11 +38,19 @@ class EventListViewModel @Inject constructor(
     private val firestore: FirebaseFirestore
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(EventListState(searchTypeSet = setOf(EVERY_EVENT)))
+    private val _state = MutableStateFlow(
+        EventListState(
+            searchTypeSet = setOf(EVERY_EVENT),
+            currentSearchType = EVERY_EVENT,
+            selectedDisplay = NavigationItem.HOME.route,
+        )
+    )
     val state = _state
         .onStart {
             repeat(7) {
-                onGetMoreEventUiModel()
+                do {
+                    val isEventUpdated = onGetMoreEventUiModel()
+                } while (!isEventUpdated)
             }
         }
         .stateIn(
@@ -53,7 +62,11 @@ class EventListViewModel @Inject constructor(
     fun onAction(action: EventListAction) {
         when (action) {
             EventListAction.OnGetMoreEventUiModel -> {
-                onGetMoreEventUiModel()
+
+                do {
+                    val isEventUpdated = onGetMoreEventUiModel()
+                } while (!isEventUpdated)
+
             }
 
             is EventListAction.OnSearchQueryChange -> {
@@ -79,7 +92,9 @@ class EventListViewModel @Inject constructor(
         }
     }
 
-    private fun onGetMoreEventUiModel() {
+    private fun onGetMoreEventUiModel(): Boolean {
+
+        var isAtLeastOneEvent = false
 
         val interestedDate = TODAY_DATE.getNDaysAgo(_state.value.dayBefore)
 
@@ -97,7 +112,10 @@ class EventListViewModel @Inject constructor(
 
                                 if (!eventUiModel.isStartedAt(interestedDate) or !eventUiModel.isHappeningAt(TODAY_DATE)) {
                                     return@forEach
+                                } else {
+                                    isAtLeastOneEvent = true
                                 }
+
 
                                 var thisEventUiModel = eventUiModel
 
@@ -111,9 +129,7 @@ class EventListViewModel @Inject constructor(
                                             if (task.isSuccessful) {
                                                 if (document != null) {
                                                     if (document.exists()) {
-                                                        thisEventUiModel = thisEventUiModel.copy(
-                                                            isFavorite = true
-                                                        )
+                                                        thisEventUiModel = thisEventUiModel.changeFavoriteStatus()
                                                     }
                                                 }
                                             }
@@ -158,6 +174,8 @@ class EventListViewModel @Inject constructor(
                 dayBefore = _state.value.dayBefore + 1
             )
         }
+
+        return isAtLeastOneEvent
     }
 
     private fun onNavigationBarClick(navigationItem: NavigationItem) {
@@ -174,14 +192,32 @@ class EventListViewModel @Inject constructor(
             }
 
             NavigationItem.FAVORITE -> {
+
                 _state.update {
                     it.copy(
                         searchQuery = "",
-                        displayingEventUiModelSet = state.value.entireEventUiModelSet.filter { eventUiModel -> eventUiModel.isFavorite }
-                            .toSet(),
+                        displayingEventUiModelSet = emptySet(),
                         selectedDisplay = navigationItem.route
                     )
                 }
+
+                firestore.collection(firebaseAuth.currentUser?.uid ?: "")
+                    .get()
+                    .addOnSuccessListener { result ->
+                        for (document in result) {
+                            val thisEventUiModel = document.toObject(EventUiModel::class.java).changeFavoriteStatus()
+                            _state.update {
+                                it.copy(
+                                    displayingEventUiModelSet = _state.value.displayingEventUiModelSet.plus(
+                                        thisEventUiModel
+                                    )
+                                )
+                            }
+                        }
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.d(TAG, "Error getting documents: ", exception)
+                    }
             }
         }
     }
@@ -210,7 +246,8 @@ class EventListViewModel @Inject constructor(
     private fun onTypeClick(type: String) {
         _state.update {
             it.copy(
-                searchQuery = ""
+                searchQuery = "",
+                currentSearchType = type
             )
         }
 

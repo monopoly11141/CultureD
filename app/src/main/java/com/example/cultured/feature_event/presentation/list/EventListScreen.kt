@@ -112,7 +112,7 @@ fun EventListScreen(
         val lazyColumnState = rememberLazyListState()
         val isAtBottom = !lazyColumnState.canScrollForward
         LaunchedEffect(isAtBottom && state.dayBefore <= 365) {
-            if (isAtBottom && state.selectedDisplay == NavigationItem.HOME.route && state.selectedDisplay == EVERY_EVENT) {
+            if (isAtBottom && state.selectedDisplay == NavigationItem.HOME.route && state.currentSearchType == EVERY_EVENT) {
                 onAction.invoke(EventListAction.OnGetMoreEventUiModel)
             }
         }

@@ -9,7 +9,6 @@ import com.example.cultured.core.presentation.model.changeFavoriteStatus
 import com.example.cultured.core.presentation.model.isHappeningAt
 import com.example.cultured.core.presentation.model.isStartedAt
 import com.example.cultured.core.presentation.model.toSha245EncodedString
-import com.example.cultured.core.presentation.util.whileTrue
 import com.example.cultured.feature_event.data.model.EventModel
 import com.example.cultured.feature_event.data.model.toEventUiModel
 import com.example.cultured.feature_event.domain.repository.EventRepository
@@ -49,9 +48,7 @@ class EventListViewModel @Inject constructor(
     val state = _state
         .onStart {
             repeat(7) {
-                whileTrue{
-                    onGetMoreEventUiModel()
-                }
+                onGetMoreEventUiModel()
             }
         }
         .stateIn(
@@ -63,9 +60,7 @@ class EventListViewModel @Inject constructor(
     fun onAction(action: EventListAction) {
         when (action) {
             EventListAction.OnGetMoreEventUiModel -> {
-                whileTrue{
-                    onGetMoreEventUiModel()
-                }
+                onGetMoreEventUiModel()
             }
 
             is EventListAction.OnSearchQueryChange -> {
@@ -91,9 +86,7 @@ class EventListViewModel @Inject constructor(
         }
     }
 
-    private fun onGetMoreEventUiModel(): Boolean {
-
-        var isAtLeastOneEvent = false
+    private fun onGetMoreEventUiModel() {
 
         val interestedDate = TODAY_DATE.getNDaysAgo(_state.value.dayBefore)
 
@@ -116,6 +109,7 @@ class EventListViewModel @Inject constructor(
                                 var thisEventUiModel = eventUiModel
 
                                 viewModelScope.launch {
+
                                     firestore
                                         .collection(firebaseAuth.currentUser!!.uid)
                                         .document(thisEventUiModel.toSha245EncodedString())
@@ -126,7 +120,6 @@ class EventListViewModel @Inject constructor(
                                                 if (document != null) {
                                                     if (document.exists()) {
                                                         thisEventUiModel = thisEventUiModel.changeFavoriteStatus()
-                                                        isAtLeastOneEvent = true
                                                     }
                                                 }
                                             }
@@ -163,16 +156,12 @@ class EventListViewModel @Inject constructor(
             override fun onFailure(eventModelCall: Call<EventModel>, throwable: Throwable) {
                 throwable.printStackTrace()
             }
-
         })
-
         _state.update {
             it.copy(
                 dayBefore = _state.value.dayBefore + 1
             )
         }
-
-        return isAtLeastOneEvent
     }
 
     private fun onNavigationBarClick(navigationItem: NavigationItem) {

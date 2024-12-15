@@ -9,6 +9,7 @@ import com.example.cultured.core.presentation.model.changeFavoriteStatus
 import com.example.cultured.core.presentation.model.isHappeningAt
 import com.example.cultured.core.presentation.model.isStartedAt
 import com.example.cultured.core.presentation.model.toSha245EncodedString
+import com.example.cultured.core.presentation.util.whileTrue
 import com.example.cultured.feature_event.data.model.EventModel
 import com.example.cultured.feature_event.data.model.toEventUiModel
 import com.example.cultured.feature_event.domain.repository.EventRepository
@@ -48,9 +49,9 @@ class EventListViewModel @Inject constructor(
     val state = _state
         .onStart {
             repeat(7) {
-                do {
-                    val isEventUpdated = onGetMoreEventUiModel()
-                } while (!isEventUpdated)
+                whileTrue{
+                    onGetMoreEventUiModel()
+                }
             }
         }
         .stateIn(
@@ -62,11 +63,9 @@ class EventListViewModel @Inject constructor(
     fun onAction(action: EventListAction) {
         when (action) {
             EventListAction.OnGetMoreEventUiModel -> {
-
-                do {
-                    val isEventUpdated = onGetMoreEventUiModel()
-                } while (!isEventUpdated)
-
+                whileTrue{
+                    onGetMoreEventUiModel()
+                }
             }
 
             is EventListAction.OnSearchQueryChange -> {
@@ -112,10 +111,7 @@ class EventListViewModel @Inject constructor(
 
                                 if (!eventUiModel.isStartedAt(interestedDate) or !eventUiModel.isHappeningAt(TODAY_DATE)) {
                                     return@forEach
-                                } else {
-                                    isAtLeastOneEvent = true
                                 }
-
 
                                 var thisEventUiModel = eventUiModel
 
@@ -130,6 +126,7 @@ class EventListViewModel @Inject constructor(
                                                 if (document != null) {
                                                     if (document.exists()) {
                                                         thisEventUiModel = thisEventUiModel.changeFavoriteStatus()
+                                                        isAtLeastOneEvent = true
                                                     }
                                                 }
                                             }

@@ -8,7 +8,6 @@ import com.example.cultured.core.presentation.model.changeFavoriteStatus
 import com.example.cultured.core.presentation.model.isHappeningAt
 import com.example.cultured.core.presentation.model.isStartedAt
 import com.example.cultured.core.presentation.model.toSha245EncodedString
-import com.example.cultured.feature_event.data.model.EventModel
 import com.example.cultured.feature_event.data.model.toEventUiModel
 import com.example.cultured.feature_event.domain.repository.EventRepository
 import com.example.cultured.feature_event.presentation.model.NavigationItem
@@ -25,9 +24,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import javax.inject.Inject
 
 @HiltViewModel
@@ -46,18 +42,10 @@ class EventListViewModel @Inject constructor(
     )
     val state = _state
         .onStart {
-            viewModelScope.launch {
-                repeat(7) {
-                    onGetMoreEventUiModel().let {
-                        _state.update {
-                            it.copy(
-                                dayBefore = _state.value.dayBefore + 1
-                            )
-                        }
-                    }
-                }
+            repeat(7) {
+                onGetMoreEventUiModel()
+                incrementDayBefore()
             }
-
         }
         .stateIn(
             viewModelScope,
@@ -65,16 +53,19 @@ class EventListViewModel @Inject constructor(
             EventListState()
         )
 
+    private fun incrementDayBefore() {
+        _state.update {
+            it.copy(
+                dayBefore = _state.value.dayBefore.plus(1)
+            )
+        }
+    }
+
     fun onAction(action: EventListAction) {
         when (action) {
             EventListAction.OnGetMoreEventUiModel -> {
-                onGetMoreEventUiModel().let {
-                    _state.update {
-                        it.copy(
-                            dayBefore = _state.value.dayBefore + 1
-                        )
-                    }
-                }
+                onGetMoreEventUiModel()
+                incrementDayBefore()
             }
 
             is EventListAction.OnSearchQueryChange -> {
@@ -104,76 +95,63 @@ class EventListViewModel @Inject constructor(
 
         val interestedDate = TODAY_DATE.getNDaysAgo(_state.value.dayBefore)
 
-        val eventCall = repository.getEventApi().getEventModelWithDate(interestedDate)
-        eventCall.enqueue(object : Callback<EventModel> {
-            override fun onResponse(eventModelCall: Call<EventModel>, response: Response<EventModel>) {
-                if (!response.isSuccessful) {
-                    throw Error("Error happened")
-                }
+        viewModelScope.launch {
+            val eventModel = repository.getEventApi().getEventModelWithDate(interestedDate)
+            Log.d("EventListViewModel", "Interested at $interestedDate")
 
-                try {
-                    viewModelScope.launch {
-                        response.body()?.let { body ->
-                            body.eventList.map { event -> event.toEventUiModel() }
-                                .forEach { eventUiModel ->
+            eventModel.eventList
+                .map { event -> event.toEventUiModel() }
+                .forEach { eventUiModel ->
 
-                                    if (!eventUiModel.isStartedAt(interestedDate) or !eventUiModel.isHappeningAt(
-                                            TODAY_DATE
-                                        )
-                                    ) {
-                                        return@forEach
-                                    }
-
-                                    var thisEventUiModel = eventUiModel
-
-                                    firestore
-                                        .collection(firebaseAuth.currentUser!!.uid)
-                                        .document(thisEventUiModel.toSha245EncodedString())
-                                        .get()
-                                        .addOnCompleteListener { task ->
-                                            val document = task.result
-                                            if (task.isSuccessful) {
-                                                if (document != null) {
-                                                    if (document.exists()) {
-                                                        thisEventUiModel = thisEventUiModel.changeFavoriteStatus()
-                                                    }
-                                                }
-                                            }
-                                        }.await()
-
-                                    _state.update {
-                                        it.copy(
-                                            entireEventUiModelSet = _state.value.entireEventUiModelSet.plus(
-                                                thisEventUiModel
-                                            )
-                                                .sortedWith(compareByDescending<EventUiModel> { eventUiModel -> eventUiModel.startDate }
-                                                    .thenBy { eventUiModel -> eventUiModel.title })
-                                                .toSet(),
-                                            displayingEventUiModelSet = _state.value.entireEventUiModelSet,
-                                            searchTypeSet = _state.value.searchTypeSet.plus(
-                                                eventUiModel.typeList.toList()
-                                            )
-                                                .sortedWith(
-                                                    compareByDescending<String> { type -> type == EVERY_EVENT }
-                                                        .thenBy { type -> type })
-                                                .toSet(),
-                                        )
-                                    }
-
-                                }
-                        }
-
+                    if (!eventUiModel.isStartedAt(interestedDate) or !eventUiModel.isHappeningAt(
+                            TODAY_DATE
+                        )
+                    ) {
+                        return@forEach
                     }
-                } catch (e: Exception) {
-                    e.printStackTrace()
+
+                    //from here, data exists
+
+                    var thisEventUiModel = eventUiModel
+
+                    firestore
+                        .collection(firebaseAuth.currentUser!!.uid)
+                        .document(thisEventUiModel.toSha245EncodedString())
+                        .get()
+                        .addOnCompleteListener { task ->
+                            val document = task.result
+                            if (task.isSuccessful) {
+                                if (document != null) {
+                                    if (document.exists()) {
+                                        thisEventUiModel = thisEventUiModel.changeFavoriteStatus()
+                                    }
+                                }
+                            }
+                        }.await()
+
+                    _state.update {
+                        it.copy(
+                            entireEventUiModelSet = _state.value.entireEventUiModelSet.plus(
+                                thisEventUiModel
+                            )
+                                .sortedWith(compareByDescending<EventUiModel> { eventUiModel -> eventUiModel.startDate }
+                                    .thenBy { eventUiModel -> eventUiModel.title })
+                                .toSet(),
+                            displayingEventUiModelSet = _state.value.entireEventUiModelSet,
+                            searchTypeSet = _state.value.searchTypeSet.plus(
+                                eventUiModel.typeList.toList()
+                            )
+                                .sortedWith(
+                                    compareByDescending<String> { type -> type == EVERY_EVENT }
+                                        .thenBy { type -> type })
+                                .toSet(),
+                        )
+                    }
+
                 }
+        }.invokeOnCompletion {
 
-            }
-
-            override fun onFailure(eventModelCall: Call<EventModel>, throwable: Throwable) {
-                throwable.printStackTrace()
-            }
-        })
+        }
 
     }
 
@@ -204,7 +182,8 @@ class EventListViewModel @Inject constructor(
                     .get()
                     .addOnSuccessListener { result ->
                         for (document in result) {
-                            val thisEventUiModel = document.toObject(EventUiModel::class.java).changeFavoriteStatus()
+                            val thisEventUiModel =
+                                document.toObject(EventUiModel::class.java).changeFavoriteStatus()
                             _state.update {
                                 it.copy(
                                     displayingEventUiModelSet = _state.value.displayingEventUiModelSet.plus(
@@ -220,6 +199,7 @@ class EventListViewModel @Inject constructor(
             }
         }
     }
+
 
     private fun onSearchQueryChange(searchQuery: String) {
 

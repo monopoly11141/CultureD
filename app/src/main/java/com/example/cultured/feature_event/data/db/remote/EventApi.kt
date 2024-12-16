@@ -7,5 +7,5 @@ import retrofit2.http.Path
 
 interface EventApi {
     @GET("1/1000/%20/%20/{DATE}")
-    fun getEventModelWithDate(@Path("DATE") date: String): Call<EventModel>
+    suspend fun getEventModelWithDate(@Path("DATE") date: String): EventModel
 }

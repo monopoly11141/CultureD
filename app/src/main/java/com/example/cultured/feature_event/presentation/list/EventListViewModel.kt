@@ -26,6 +26,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import okhttp3.internal.notify
+import okhttp3.internal.wait
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -47,9 +49,18 @@ class EventListViewModel @Inject constructor(
     )
     val state = _state
         .onStart {
-            repeat(7) {
-                onGetMoreEventUiModel()
+            viewModelScope.launch {
+                repeat(7) {
+                    onGetMoreEventUiModel().let {
+                        _state.update {
+                            it.copy(
+                                dayBefore = _state.value.dayBefore + 1
+                            )
+                        }
+                    }
+                }
             }
+
         }
         .stateIn(
             viewModelScope,
@@ -60,7 +71,13 @@ class EventListViewModel @Inject constructor(
     fun onAction(action: EventListAction) {
         when (action) {
             EventListAction.OnGetMoreEventUiModel -> {
-                onGetMoreEventUiModel()
+                onGetMoreEventUiModel().let {
+                    _state.update {
+                        it.copy(
+                            dayBefore = _state.value.dayBefore + 1
+                        )
+                    }
+                }
             }
 
             is EventListAction.OnSearchQueryChange -> {
@@ -98,17 +115,19 @@ class EventListViewModel @Inject constructor(
                 }
 
                 try {
-                    response.body()?.let { body ->
-                        body.eventList.map { event -> event.toEventUiModel() }
-                            .forEach { eventUiModel ->
+                    viewModelScope.launch {
+                        response.body()?.let { body ->
+                            body.eventList.map { event -> event.toEventUiModel() }
+                                .forEach { eventUiModel ->
 
-                                if (!eventUiModel.isStartedAt(interestedDate) or !eventUiModel.isHappeningAt(TODAY_DATE)) {
-                                    return@forEach
-                                }
+                                    if (!eventUiModel.isStartedAt(interestedDate) or !eventUiModel.isHappeningAt(
+                                            TODAY_DATE
+                                        )
+                                    ) {
+                                        return@forEach
+                                    }
 
-                                var thisEventUiModel = eventUiModel
-
-                                viewModelScope.launch {
+                                    var thisEventUiModel = eventUiModel
 
                                     firestore
                                         .collection(firebaseAuth.currentUser!!.uid)
@@ -143,8 +162,10 @@ class EventListViewModel @Inject constructor(
                                                 .toSet(),
                                         )
                                     }
+
                                 }
-                            }
+                            Log.d("EventListViewModel", _state.value.dayBefore.toString())
+                        }
 
                     }
                 } catch (e: Exception) {
@@ -157,11 +178,7 @@ class EventListViewModel @Inject constructor(
                 throwable.printStackTrace()
             }
         })
-        _state.update {
-            it.copy(
-                dayBefore = _state.value.dayBefore + 1
-            )
-        }
+
     }
 
     private fun onNavigationBarClick(navigationItem: NavigationItem) {

@@ -1,6 +1,5 @@
 package com.example.cultured.core.presentation.model
 
-import com.example.cultured.core.presentation.util.toSha256EncodedString
 import com.google.firebase.firestore.Exclude
 import com.google.firebase.firestore.PropertyName
 import kotlinx.serialization.Serializable
@@ -105,8 +104,8 @@ fun EventUiModel.isStartedAt(dateString: String): Boolean {
     return dateStringLocalDate == startLocalDate
 }
 
-fun EventUiModel.toSha245EncodedString(): String {
-    return this.copy(isFavorite = false).toString().toSha256EncodedString()
+fun EventUiModel.toDocumentId(): String {
+    return (this.title + this.startDate + this.endDate).replace("/", "-")
 }
 
 fun EventUiModel.changeFavoriteStatus() : EventUiModel {

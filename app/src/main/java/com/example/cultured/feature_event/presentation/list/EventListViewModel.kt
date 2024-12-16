@@ -1,13 +1,16 @@
 package com.example.cultured.feature_event.presentation.list
 
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cultured.core.presentation.model.EventUiModel
 import com.example.cultured.core.presentation.model.changeFavoriteStatus
 import com.example.cultured.core.presentation.model.isHappeningAt
 import com.example.cultured.core.presentation.model.isStartedAt
-import com.example.cultured.core.presentation.model.toSha245EncodedString
+import com.example.cultured.core.presentation.model.toDocumentId
 import com.example.cultured.feature_event.data.model.toEventUiModel
 import com.example.cultured.feature_event.domain.repository.EventRepository
 import com.example.cultured.feature_event.presentation.model.NavigationItem
@@ -44,6 +47,7 @@ class EventListViewModel @Inject constructor(
         .onStart {
             repeat(7) {
                 onGetMoreEventUiModel()
+
                 incrementDayBefore()
             }
         }
@@ -52,6 +56,8 @@ class EventListViewModel @Inject constructor(
             SharingStarted.WhileSubscribed(5000L),
             EventListState()
         )
+
+    private var gotData by mutableIntStateOf(0)
 
     private fun incrementDayBefore() {
         _state.update {
@@ -94,10 +100,10 @@ class EventListViewModel @Inject constructor(
     private fun onGetMoreEventUiModel() {
 
         val interestedDate = TODAY_DATE.getNDaysAgo(_state.value.dayBefore)
+        gotData = 0
 
         viewModelScope.launch {
             val eventModel = repository.getEventApi().getEventModelWithDate(interestedDate)
-            Log.d("EventListViewModel", "Interested at $interestedDate")
 
             eventModel.eventList
                 .map { event -> event.toEventUiModel() }
@@ -111,12 +117,12 @@ class EventListViewModel @Inject constructor(
                     }
 
                     //from here, data exists
-
+                    gotData++
                     var thisEventUiModel = eventUiModel
 
                     firestore
                         .collection(firebaseAuth.currentUser!!.uid)
-                        .document(thisEventUiModel.toSha245EncodedString())
+                        .document(thisEventUiModel.toDocumentId())
                         .get()
                         .addOnCompleteListener { task ->
                             val document = task.result
@@ -150,7 +156,12 @@ class EventListViewModel @Inject constructor(
 
                 }
         }.invokeOnCompletion {
-
+            if (gotData == 0 && state.value.dayBefore <= 365) {
+                incrementDayBefore()
+                viewModelScope.launch {
+                    onGetMoreEventUiModel()
+                }
+            }
         }
 
     }
@@ -258,14 +269,20 @@ class EventListViewModel @Inject constructor(
         var displayingEventUiModelSet = _state.value.displayingEventUiModelSet.toMutableSet()
 
         val indexInEntireEventUiModelSet = entireEventUiModelSet.indexOf(eventUiModel)
-        entireEventUiModelSet = entireEventUiModelSet.toMutableList().apply {
-            this[indexInEntireEventUiModelSet] = eventUiModel.changeFavoriteStatus()
-        }.toMutableSet()
+
+        if(indexInEntireEventUiModelSet != -1) {
+            entireEventUiModelSet = entireEventUiModelSet.toMutableList().apply {
+                this[indexInEntireEventUiModelSet] = eventUiModel.changeFavoriteStatus()
+            }.toMutableSet()
+        }
 
         val indexInDisplayingEventUiModelSet = displayingEventUiModelSet.indexOf(eventUiModel)
-        displayingEventUiModelSet = displayingEventUiModelSet.toMutableList().apply {
-            this[indexInDisplayingEventUiModelSet] = eventUiModel.changeFavoriteStatus()
-        }.toMutableSet()
+
+        if(indexInDisplayingEventUiModelSet != -1) {
+            displayingEventUiModelSet = displayingEventUiModelSet.toMutableList().apply {
+                this[indexInDisplayingEventUiModelSet] = eventUiModel.changeFavoriteStatus()
+            }.toMutableSet()
+        }
 
         _state.update {
             it.copy(
@@ -276,7 +293,7 @@ class EventListViewModel @Inject constructor(
     }
 
     private fun updateFirestoreDbOnItemFavoriteClick(eventUiModel: EventUiModel) {
-        val firestoreDocumentId = eventUiModel.toSha245EncodedString()
+        val firestoreDocumentId = eventUiModel.toDocumentId()
 
         when (!eventUiModel.isFavorite) {
             true -> {

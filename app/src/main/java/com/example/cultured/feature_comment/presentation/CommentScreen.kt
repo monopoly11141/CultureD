@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -29,7 +30,6 @@ import com.example.cultured.core.presentation.model.EventUiModel
 import com.example.cultured.core.presentation.preview.PreviewModel
 import com.example.cultured.core.presentation.preview.PreviewParameterProvider
 import com.example.cultured.feature_comment.presentation.component.CommentItem
-import com.example.cultured.feature_comment.presentation.model.CommentUiModel
 import com.example.cultured.ui.theme.CultureDTheme
 
 @Composable
@@ -80,7 +80,7 @@ fun CommentScreen(
 
             EventImage(
                 modifier = modifier
-                    .fillMaxHeight(0.3f),
+                    .fillMaxHeight(0.35f),
                 imageUrl = state.eventUiModel.imageUrl,
                 contentDescription = "${state.eventUiModel.title} 이미지"
             )
@@ -111,7 +111,14 @@ fun CommentScreen(
                         commentUiModel = commentUiModel,
                         isCommentByCurrentUser = commentUiModel.author == state.currentUser
                     )
+
+                    HorizontalDivider(
+                        color = MaterialTheme.colorScheme.primary,
+                        thickness = 1.dp,
+                    )
+
                 }
+
             }
         }
     }

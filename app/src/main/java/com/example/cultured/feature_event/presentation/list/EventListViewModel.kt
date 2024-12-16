@@ -1,6 +1,5 @@
 package com.example.cultured.feature_event.presentation.list
 
-import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -26,8 +25,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import okhttp3.internal.notify
-import okhttp3.internal.wait
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -164,7 +161,6 @@ class EventListViewModel @Inject constructor(
                                     }
 
                                 }
-                            Log.d("EventListViewModel", _state.value.dayBefore.toString())
                         }
 
                     }
@@ -219,7 +215,7 @@ class EventListViewModel @Inject constructor(
                         }
                     }
                     .addOnFailureListener { exception ->
-                        Log.d(TAG, "Error getting documents: ", exception)
+
                     }
             }
         }
@@ -300,9 +296,7 @@ class EventListViewModel @Inject constructor(
     }
 
     private fun updateFirestoreDbOnItemFavoriteClick(eventUiModel: EventUiModel) {
-        val firestoreDocumentId = eventUiModel.copy(
-            isFavorite = false
-        ).toSha245EncodedString()
+        val firestoreDocumentId = eventUiModel.toSha245EncodedString()
 
         when (!eventUiModel.isFavorite) {
             true -> {
@@ -311,7 +305,7 @@ class EventListViewModel @Inject constructor(
                     .document(firestoreDocumentId)
                     .set(eventUiModel)
                     .addOnSuccessListener { documentReference ->
-                        Log.d("EventListViewModel", "Added with id: ${documentReference}")
+                        Log.d("EventListViewModel", "Added with id: $documentReference")
                     }
                     .addOnFailureListener { e ->
                         Log.d("EventListViewModel", "Error :  $e")

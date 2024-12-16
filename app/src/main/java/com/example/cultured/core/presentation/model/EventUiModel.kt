@@ -106,7 +106,7 @@ fun EventUiModel.isStartedAt(dateString: String): Boolean {
 }
 
 fun EventUiModel.toSha245EncodedString(): String {
-    return this.toString().toSha256EncodedString()
+    return this.copy(isFavorite = false).toString().toSha256EncodedString()
 }
 
 fun EventUiModel.changeFavoriteStatus() : EventUiModel {

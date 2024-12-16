@@ -1,9 +1,9 @@
 package com.example.cultured.feature_comment.presentation
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cultured.core.presentation.model.EventUiModel
+import com.example.cultured.feature_comment.presentation.model.CommentUiModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,6 +39,19 @@ class CommentViewModel @Inject constructor(
             is CommentAction.InitEventUiModel -> {
                 initEventUiModel(action.eventUiModel)
             }
+
+            is CommentAction.OnCommentTitleChange -> {
+                onCommentTitleChange(action.commentTitle)
+            }
+
+            is CommentAction.OnCommentContentChange -> {
+                onCommentContentChange(action.commentContent)
+            }
+
+            CommentAction.OnPostComment -> {
+                onPostComment()
+
+            }
         }
     }
 
@@ -49,4 +62,35 @@ class CommentViewModel @Inject constructor(
             )
         }
     }
+
+    private fun onCommentTitleChange(commentTitle: String) {
+        _state.update {
+            it.copy(
+                currentCommentTitle = commentTitle
+            )
+        }
+    }
+
+    private fun onCommentContentChange(commentContent: String) {
+        _state.update {
+            it.copy(
+                currentCommentContent = commentContent
+            )
+        }
+    }
+
+    private fun onPostComment() {
+        val commentUiModel = CommentUiModel(
+            title = _state.value.currentCommentTitle,
+            author = _state.value.currentUser,
+            content = _state.value.currentCommentContent
+        )
+        _state.update {
+            it.copy(
+                commentList = _state.value.commentList.plus(commentUiModel),
+                currentCommentContent = ""
+            )
+        }
+    }
+
 }

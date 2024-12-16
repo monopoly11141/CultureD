@@ -1,10 +1,13 @@
 package com.example.cultured.feature_comment.presentation
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
@@ -14,13 +17,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -30,6 +33,7 @@ import com.example.cultured.core.presentation.model.EventUiModel
 import com.example.cultured.core.presentation.preview.PreviewModel
 import com.example.cultured.core.presentation.preview.PreviewParameterProvider
 import com.example.cultured.feature_comment.presentation.component.CommentItem
+import com.example.cultured.navigation.Screen
 import com.example.cultured.ui.theme.CultureDTheme
 
 @Composable
@@ -37,10 +41,12 @@ fun CommentScreenRoot(
     modifier: Modifier = Modifier,
     navController: NavController,
     viewModel: CommentViewModel = hiltViewModel(),
-    eventUiModel: EventUiModel
+    eventUiModel: EventUiModel? = null
 ) {
     LaunchedEffect(true) {
-        viewModel.onAction(CommentAction.InitEventUiModel(eventUiModel))
+        eventUiModel?.let {
+            viewModel.onAction(CommentAction.InitEventUiModel(it))
+        }
     }
 
     CommentScreen(
@@ -69,18 +75,10 @@ fun CommentScreen(
             modifier = modifier
                 .padding(paddingValues)
         ) {
-            Text(
-                modifier = modifier
-                    .fillMaxWidth(),
-                text = state.eventUiModel.title,
-                textAlign = TextAlign.Center,
-                fontSize = 20.sp,
-                color = MaterialTheme.colorScheme.primary
-            )
 
             EventImage(
                 modifier = modifier
-                    .fillMaxHeight(0.35f),
+                    .weight(0.4f),
                 imageUrl = state.eventUiModel.imageUrl,
                 contentDescription = "${state.eventUiModel.title} 이미지"
             )
@@ -98,6 +96,36 @@ fun CommentScreen(
                 Text(
                     text = "웹사이트 가기"
                 )
+            }
+
+            Row(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.1f),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    modifier = modifier
+                        .fillMaxHeight()
+                        .wrapContentSize()
+                        .padding(8.dp),
+                    text = "댓글 (${state.commentList.size}개)",
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold,
+                )
+
+                Button(
+                    onClick = { navController.navigate(Screen.CommentWriteScreen.route) },
+                    modifier = modifier
+                        .fillMaxHeight()
+                        .wrapContentSize()
+                        .padding(8.dp)
+                ) {
+                    Text(
+                        text = "댓글 쓰기"
+                    )
+                }
             }
 
             LazyColumn(

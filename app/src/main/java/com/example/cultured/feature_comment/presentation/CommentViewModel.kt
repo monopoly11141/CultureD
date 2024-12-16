@@ -50,8 +50,8 @@ class CommentViewModel @Inject constructor(
 
             CommentAction.OnPostComment -> {
                 onPostComment()
-
             }
+
         }
     }
 
@@ -88,6 +88,7 @@ class CommentViewModel @Inject constructor(
         _state.update {
             it.copy(
                 commentList = _state.value.commentList.plus(commentUiModel),
+                currentCommentTitle = "",
                 currentCommentContent = ""
             )
         }

@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -39,7 +40,8 @@ fun EventItem(
     eventUiModel: EventUiModel,
     onItemClick: () -> Unit,
     onTypeClick: (typeItem: String) -> Unit,
-    onFavoriteIconClick: () -> Unit
+    onFavoriteIconClick: () -> Unit,
+    onShareIconClick: () -> Unit
 ) {
     Row(
         modifier = modifier
@@ -114,6 +116,8 @@ fun EventItem(
             Row(
                 modifier = modifier
                     .fillMaxWidth()
+                    .padding(horizontal = 4.dp),
+                horizontalArrangement = Arrangement.End
             ) {
                 IconButton(onClick = { onFavoriteIconClick() }) {
                     Icon(
@@ -122,6 +126,15 @@ fun EventItem(
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
+
+                IconButton(onClick = { onShareIconClick() }) {
+                    Icon(
+                        imageVector = Icons.Outlined.Share,
+                        contentDescription = "공유하기",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+
             }
 
         }
@@ -136,7 +149,8 @@ private fun EventItemPreview(@PreviewParameter(PreviewParameterProvider::class) 
             eventUiModel = previewModel.eventUiModel,
             onItemClick = {},
             onTypeClick = {},
-            onFavoriteIconClick = {}
+            onFavoriteIconClick = {},
+            onShareIconClick = {}
         )
     }
 }

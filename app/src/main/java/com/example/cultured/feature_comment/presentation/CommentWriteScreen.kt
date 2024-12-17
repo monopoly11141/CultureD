@@ -51,7 +51,7 @@ fun CommentWriteScreen(
         },
         onPostComment = {
             onAction.invoke(CommentAction.OnPostComment)
-            navController.navigate(Screen.CommentScreen.route)
+            navController.popBackStack()
         }
     )
 }

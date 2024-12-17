@@ -14,15 +14,19 @@ import com.example.cultured.core.presentation.model.toDocumentId
 import com.example.cultured.feature_event.data.model.toEventUiModel
 import com.example.cultured.feature_event.domain.repository.EventRepository
 import com.example.cultured.feature_event.presentation.model.NavigationItem
+import com.example.cultured.feature_login.domain.FirebaseAuthError
+import com.example.cultured.feature_login.presentation.login.LoginEvent
 import com.example.cultured.util.DateUtil.TODAY_DATE
 import com.example.cultured.util.DateUtil.getNDaysAgo
 import com.example.cultured.util.EventTypeUtil.EVERY_EVENT
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -57,6 +61,9 @@ class EventListViewModel @Inject constructor(
             EventListState()
         )
 
+    private val _eventChannel = Channel<EventListEvent>()
+    val eventChannel = _eventChannel.receiveAsFlow()
+
     private var gotData by mutableIntStateOf(0)
 
     private fun incrementDayBefore() {
@@ -86,6 +93,10 @@ class EventListViewModel @Inject constructor(
                 onItemFavoriteClick(action.eventUiModel)
             }
 
+            is EventListAction.OnItemShareClick -> {
+                onItemShareClick(action.eventUiModel)
+            }
+
             is EventListAction.OnLogoutClick -> {
                 onLogoutClick()
             }
@@ -94,6 +105,12 @@ class EventListViewModel @Inject constructor(
                 onNavigationBarClick(action.navigationItem)
             }
 
+        }
+    }
+
+    private fun onItemShareClick(eventUiModel: EventUiModel) {
+        viewModelScope.launch {
+            _eventChannel.send(EventListEvent.OnShare(eventUiModel))
         }
     }
 

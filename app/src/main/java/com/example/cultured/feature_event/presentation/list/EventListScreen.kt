@@ -1,5 +1,6 @@
 package com.example.cultured.feature_event.presentation.list
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -33,6 +35,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.cultured.core.presentation.preview.PreviewModel
 import com.example.cultured.core.presentation.preview.PreviewParameterProvider
+import com.example.cultured.core.presentation.util.ObserveAsEvents
 import com.example.cultured.feature_event.presentation.list.component.EventItem
 import com.example.cultured.feature_event.presentation.list.component.EventSearchBar
 import com.example.cultured.feature_event.presentation.list.component.EventTagFlowRow
@@ -41,6 +44,8 @@ import com.example.cultured.feature_event.presentation.model.NavigationItem
 import com.example.cultured.navigation.Screen
 import com.example.cultured.ui.theme.CultureDTheme
 import com.example.cultured.util.EventTypeUtil.EVERY_EVENT
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
 fun EventListScreenRoot(
@@ -52,6 +57,7 @@ fun EventListScreenRoot(
         modifier = modifier,
         navController = navController,
         state = viewModel.state.collectAsStateWithLifecycle().value,
+        eventFlow = viewModel.eventChannel,
         onAction = { action ->
             viewModel.onAction(action)
         }
@@ -63,8 +69,29 @@ fun EventListScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
     state: EventListState,
+    eventFlow: Flow<EventListEvent>,
     onAction: (EventListAction) -> Unit
 ) {
+    val context = LocalContext.current
+
+    ObserveAsEvents(eventFlow = eventFlow) { event ->
+        when (event) {
+            is EventListEvent.OnShare -> {
+
+                val sendIntent: Intent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(
+                        Intent.EXTRA_TEXT,
+                        "${event.eventUiModel.title}\n " + "${event.eventUiModel.eventUrl}"
+                    )
+                    type = "text/plain"
+                }
+                val shareIntent = Intent.createChooser(sendIntent, null)
+                context.startActivity(shareIntent)
+            }
+        }
+    }
+
     Scaffold(
         modifier = modifier
             .fillMaxSize(),
@@ -138,6 +165,9 @@ fun EventListScreen(
                         },
                         onFavoriteIconClick = {
                             onAction.invoke(EventListAction.OnItemFavoriteClick(eventUiModel))
+                        },
+                        onShareIconClick = {
+                            onAction.invoke(EventListAction.OnItemShareClick(eventUiModel))
                         }
                     )
 
@@ -191,7 +221,8 @@ private fun EventListScreenPreview(@PreviewParameter(PreviewParameterProvider::c
                 displayingEventUiModelSet = previewModel.eventUiModelList.toSet(),
                 searchTypeSet = previewModel.eventUiModelList.map { it -> it.typeList }.flatten().toSet()
             ),
-            onAction = {}
+            eventFlow = emptyFlow(),
+            onAction = {},
         )
     }
 }

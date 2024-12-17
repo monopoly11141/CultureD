@@ -82,7 +82,7 @@ fun EventListScreen(
                     action = Intent.ACTION_SEND
                     putExtra(
                         Intent.EXTRA_TEXT,
-                        "${event.eventUiModel.title}\n " + "${event.eventUiModel.eventUrl}"
+                        "${event.eventUiModel.title}\n " + event.eventUiModel.eventUrl
                     )
                     type = "text/plain"
                 }

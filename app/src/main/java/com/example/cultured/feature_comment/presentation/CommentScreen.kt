@@ -137,7 +137,10 @@ fun CommentScreen(
                         modifier = modifier
                             .padding(2.dp),
                         commentUiModel = commentUiModel,
-                        isCommentByCurrentUser = commentUiModel.author == state.currentUser
+                        isCommentByCurrentUser = commentUiModel.author == state.currentUser,
+                        onDeleteItemClick = {
+                            onAction.invoke(CommentAction.OnDeleteComment(commentUiModel))
+                        }
                     )
 
                     HorizontalDivider(

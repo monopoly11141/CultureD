@@ -1,6 +1,7 @@
 package com.example.cultured.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -35,19 +36,19 @@ fun Navigation(
             val eventUiModel: EventUiModel = backStackEntry.toRoute()
             CommentScreenRoot(
                 navController = navHostController,
-                eventUiModel = eventUiModel
-            )
-        }
-
-        composable(Screen.CommentScreen.route) {
-            CommentScreenRoot(
-                navController = navHostController
+                eventUiModel = eventUiModel,
+                viewModel = hiltViewModel(backStackEntry)
             )
         }
 
         composable(Screen.CommentWriteScreen.route) {
             CommentWriteScreenRoot(
-                navController = navHostController
+                navController = navHostController,
+                viewModel = if (navHostController.previousBackStackEntry != null) {
+                    hiltViewModel(navHostController.previousBackStackEntry!!)
+                }else {
+                    hiltViewModel()
+                }
             )
         }
 

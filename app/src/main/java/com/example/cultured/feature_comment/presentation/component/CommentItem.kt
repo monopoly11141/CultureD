@@ -1,9 +1,15 @@
 package com.example.cultured.feature_comment.presentation.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,13 +28,15 @@ import com.example.cultured.ui.theme.CultureDTheme
 fun CommentItem(
     modifier: Modifier = Modifier,
     commentUiModel: CommentUiModel,
-    isCommentByCurrentUser: Boolean
+    isCommentByCurrentUser: Boolean,
+    onDeleteItemClick: () -> Unit
 ) {
     Column(
         modifier = modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.background)
     ) {
+
         Text(
             modifier = modifier
                 .fillMaxWidth()
@@ -57,6 +65,24 @@ fun CommentItem(
             fontSize = 14.sp
         )
 
+        if (isCommentByCurrentUser) {
+            Row(
+                modifier = modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Delete,
+                    contentDescription = "댓글 삭제하기",
+                    modifier = modifier
+                        .padding(horizontal = 4.dp)
+                        .clickable{
+                            onDeleteItemClick()
+                        }
+                )
+            }
+        }
+
     }
 }
 
@@ -66,7 +92,8 @@ private fun CommentItemPreview(@PreviewParameter(PreviewParameterProvider::class
     CultureDTheme {
         CommentItem(
             commentUiModel = previewModel.commentUiModel,
-            isCommentByCurrentUser = true
+            isCommentByCurrentUser = true,
+            onDeleteItemClick = {}
         )
     }
 }

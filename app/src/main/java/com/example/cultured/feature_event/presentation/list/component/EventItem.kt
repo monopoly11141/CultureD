@@ -60,7 +60,7 @@ fun EventItem(
         Column {
 
             Row(
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxWidth()
                     .padding(horizontal = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -80,15 +80,15 @@ fun EventItem(
                 }
 
                 EventLocationItem(
-                    modifier = Modifier,
+                    modifier = modifier,
                     location = eventUiModel.location
                 )
 
             }
 
             Text(
-                modifier = Modifier
-                    .padding(4.dp),
+                modifier = modifier
+                    .padding(horizontal = 4.dp),
                 text = eventUiModel.title,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.ExtraBold,
@@ -97,6 +97,8 @@ fun EventItem(
             )
 
             EventCostItem(
+                modifier = modifier
+                    .padding(horizontal = 4.dp),
                 feeInformation = eventUiModel.feeInformation,
                 isFree = eventUiModel.isFree
             )
@@ -110,7 +112,6 @@ fun EventItem(
                 fontWeight = FontWeight.Medium,
                 fontFamily = AppTypography.headlineLarge.fontFamily,
                 fontSize = 12.sp,
-                textAlign = TextAlign.End
             )
 
             Row(

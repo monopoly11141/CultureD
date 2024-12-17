@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -29,6 +30,7 @@ fun CommentItem(
     modifier: Modifier = Modifier,
     commentUiModel: CommentUiModel,
     isCommentByCurrentUser: Boolean,
+    onEditItemClick: () -> Unit,
     onDeleteItemClick: () -> Unit
 ) {
     Column(
@@ -72,12 +74,22 @@ fun CommentItem(
                 horizontalArrangement = Arrangement.End
             ) {
                 Icon(
+                    imageVector = Icons.Outlined.Edit,
+                    contentDescription = "댓글 수정하기",
+                    modifier = modifier
+                        .padding(horizontal = 4.dp)
+                        .clickable {
+                            onEditItemClick.invoke()
+                        }
+                )
+
+                Icon(
                     imageVector = Icons.Outlined.Delete,
                     contentDescription = "댓글 삭제하기",
                     modifier = modifier
                         .padding(horizontal = 4.dp)
-                        .clickable{
-                            onDeleteItemClick()
+                        .clickable {
+                            onDeleteItemClick.invoke()
                         }
                 )
             }
@@ -93,6 +105,7 @@ private fun CommentItemPreview(@PreviewParameter(PreviewParameterProvider::class
         CommentItem(
             commentUiModel = previewModel.commentUiModel,
             isCommentByCurrentUser = true,
+            onEditItemClick = {},
             onDeleteItemClick = {}
         )
     }

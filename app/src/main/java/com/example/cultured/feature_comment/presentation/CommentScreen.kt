@@ -46,6 +46,7 @@ fun CommentScreenRoot(
     LaunchedEffect(true) {
         eventUiModel?.let {
             viewModel.onAction(CommentAction.InitEventUiModel(it))
+            //viewModel.onAction(CommentAction.InitCommentList)
         }
     }
 
@@ -116,7 +117,10 @@ fun CommentScreen(
                 )
 
                 Button(
-                    onClick = { navController.navigate(Screen.CommentWriteScreen.route) },
+                    onClick = {
+                        onAction.invoke(CommentAction.OnWriteCommentButtonClick)
+                        navController.navigate(Screen.CommentWriteScreen.route)
+                    },
                     modifier = modifier
                         .fillMaxHeight()
                         .wrapContentSize()
@@ -132,12 +136,19 @@ fun CommentScreen(
                 modifier = modifier
                     .weight(1f)
             ) {
-                items(state.commentList) { commentUiModel ->
+                items(
+                    state.commentList,
+                    key = { comment -> comment.toString() }
+                ) { commentUiModel ->
                     CommentItem(
                         modifier = modifier
                             .padding(2.dp),
                         commentUiModel = commentUiModel,
                         isCommentByCurrentUser = commentUiModel.author == state.currentUser,
+                        onEditItemClick = {
+                            onAction.invoke(CommentAction.OnEditCommentButtonClick(commentUiModel))
+                            navController.navigate(Screen.CommentWriteScreen.route)
+                        },
                         onDeleteItemClick = {
                             onAction.invoke(CommentAction.OnDeleteComment(commentUiModel))
                         }

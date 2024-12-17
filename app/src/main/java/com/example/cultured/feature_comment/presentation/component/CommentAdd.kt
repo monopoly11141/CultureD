@@ -17,6 +17,7 @@ fun CommentAdd(
     onCurrentCommentTitleChange: (String) -> Unit,
     currentCommentContent: String,
     onCurrentCommentContentChange: (String) -> Unit,
+    buttonText: String,
     onPostComment: () -> Unit
 ) {
     Column(
@@ -41,13 +42,14 @@ fun CommentAdd(
                 onCurrentCommentContentChange.invoke(currentCommentContent)
             }
         )
+
         Button(
             modifier = modifier
                 .weight(0.1f)
                 .fillMaxWidth(),
             onClick = { onPostComment.invoke() }
         ) {
-            Text("댓글 남기기")
+            Text(buttonText)
         }
     }
 
@@ -62,6 +64,7 @@ private fun CommentAddPreview() {
             onCurrentCommentTitleChange = {},
             currentCommentContent = "",
             onCurrentCommentContentChange = {},
+            buttonText = "댓글 남기기",
             onPostComment = {}
         )
     }

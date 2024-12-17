@@ -1,6 +1,7 @@
 package com.example.cultured.feature_comment.presentation
 
 import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cultured.core.presentation.model.EventUiModel
@@ -20,6 +21,7 @@ import javax.inject.Inject
 class CommentViewModel @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val firebaseAuth: FirebaseAuth,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val _state = MutableStateFlow(CommentState())
     val state = _state
@@ -33,10 +35,15 @@ class CommentViewModel @Inject constructor(
             CommentState()
         )
 
+
     fun onAction(action: CommentAction) {
         when (action) {
             is CommentAction.InitEventUiModel -> {
                 initEventUiModel(action.eventUiModel)
+            }
+
+            CommentAction.InitCommentList -> {
+                initCommentList()
             }
 
             is CommentAction.OnCommentTitleChange -> {
@@ -54,6 +61,18 @@ class CommentViewModel @Inject constructor(
             is CommentAction.OnDeleteComment -> {
                 onDeleteComment(action.commentUiModel)
             }
+
+            is CommentAction.OnEditComment -> {
+                onEditComment()
+            }
+
+            CommentAction.OnWriteCommentButtonClick -> {
+                onWriteCommentButtonClick()
+            }
+
+            is CommentAction.OnEditCommentButtonClick -> {
+                onEditCommentButtonClick(action.commentUiModel)
+            }
         }
     }
 
@@ -66,6 +85,12 @@ class CommentViewModel @Inject constructor(
     }
 
     private fun initCommentList() {
+
+        _state.update {
+            it.copy(
+                commentList = emptyList()
+            )
+        }
 
         firestore.collection(_state.value.eventUiModel.toDocumentId())
             .get()
@@ -107,6 +132,7 @@ class CommentViewModel @Inject constructor(
     }
 
     private fun onPostComment() {
+
         val commentUiModel = CommentUiModel(
             title = _state.value.currentCommentTitle,
             author = _state.value.currentUser,
@@ -127,6 +153,49 @@ class CommentViewModel @Inject constructor(
             .addOnFailureListener { e ->
                 Log.w("CommentViewModel", "${e.message}")
             }
+
+    }
+
+    private fun onEditComment() {
+        val commentUiModel = CommentUiModel(
+            title = _state.value.currentCommentTitle,
+            author = _state.value.currentUser,
+            content = _state.value.currentCommentContent
+        )
+
+        firestore.collection(_state.value.eventUiModel.toDocumentId())
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    val documentCommentUiModel = document.toObject(CommentUiModel::class.java)
+
+                    if (documentCommentUiModel == _state.value.currentEditingComment) {
+
+                        var commentList = _state.value.commentList
+                        commentList = commentList.map { comment ->
+                            if(comment == _state.value.currentEditingComment) {
+                                commentUiModel
+                            }else {
+                                comment
+                            }
+                        }
+
+                        firestore.collection(_state.value.eventUiModel.toDocumentId())
+                            .document(document.id)
+                            .set(commentUiModel)
+
+
+                        _state.update {
+                            it.copy(
+                                commentList = commentList
+                            )
+                        }
+
+                        break
+                    }
+                }
+            }
+
     }
 
     private fun onDeleteComment(commentUiModel: CommentUiModel) {
@@ -136,7 +205,7 @@ class CommentViewModel @Inject constructor(
                 for (document in result) {
                     val documentCommentUiModel = document.toObject(CommentUiModel::class.java)
 
-                    if(documentCommentUiModel == commentUiModel) {
+                    if (documentCommentUiModel == commentUiModel) {
                         firestore.collection(_state.value.eventUiModel.toDocumentId())
                             .document(document.id)
                             .delete()
@@ -151,6 +220,26 @@ class CommentViewModel @Inject constructor(
                     }
                 }
             }
+    }
+
+
+    private fun onWriteCommentButtonClick() {
+        _state.update {
+            it.copy(
+                isCreate = true
+            )
+        }
+    }
+
+    private fun onEditCommentButtonClick(commentUiModel: CommentUiModel) {
+        _state.update {
+            it.copy(
+                currentEditingComment = commentUiModel,
+                isCreate = false,
+                currentCommentTitle = commentUiModel.title,
+                currentCommentContent = commentUiModel.content
+            )
+        }
     }
 
 }

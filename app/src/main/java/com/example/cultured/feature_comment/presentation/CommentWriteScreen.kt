@@ -1,6 +1,7 @@
 package com.example.cultured.feature_comment.presentation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -22,6 +23,7 @@ fun CommentWriteScreenRoot(
     navController: NavController,
     viewModel: CommentViewModel = hiltViewModel()
 ) {
+
     CommentWriteScreen(
         modifier = modifier,
         navController = navController,
@@ -49,9 +51,15 @@ fun CommentWriteScreen(
         onCurrentCommentContentChange = { content ->
             onAction.invoke(CommentAction.OnCommentContentChange(content))
         },
+        buttonText = if(state.isCreate) "댓글 남기기" else "댓글 수정하기",
         onPostComment = {
-            onAction.invoke(CommentAction.OnPostComment)
-            navController.popBackStack()
+            if(state.isCreate) {
+                onAction.invoke(CommentAction.OnPostComment)
+            } else {
+                onAction.invoke(CommentAction.OnEditComment)
+            }
+
+            navController.navigate(state.eventUiModel)
         }
     )
 }

@@ -3,8 +3,10 @@ package com.example.cultured.navigation
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import androidx.navigation.toRoute
 import com.example.cultured.core.presentation.model.EventUiModel
 import com.example.cultured.feature_comment.presentation.CommentScreenRoot
@@ -41,7 +43,9 @@ fun Navigation(
             )
         }
 
-        composable(Screen.CommentWriteScreen.route) {
+        composable(
+            route = Screen.CommentWriteScreen.route,
+        ) {
             CommentWriteScreenRoot(
                 navController = navHostController,
                 viewModel = if (navHostController.previousBackStackEntry != null) {

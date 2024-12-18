@@ -13,6 +13,7 @@ import com.example.cultured.feature_comment.presentation.CommentScreenRoot
 import com.example.cultured.feature_comment.presentation.CommentWriteScreenRoot
 import com.example.cultured.feature_event.presentation.list.EventListScreenRoot
 import com.example.cultured.feature_login.presentation.login.LoginScreenRoot
+import com.example.cultured.feature_map.presentation.map.MapScreenRoot
 
 @Composable
 fun Navigation(
@@ -53,6 +54,14 @@ fun Navigation(
                 }else {
                     hiltViewModel()
                 }
+            )
+        }
+
+        composable(
+            route = Screen.MapScreen.route,
+        ) {
+            MapScreenRoot(
+                navController = navHostController
             )
         }
 

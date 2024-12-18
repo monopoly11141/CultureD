@@ -13,6 +13,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,6 +42,7 @@ fun EventItem(
     eventUiModel: EventUiModel,
     onItemClick: () -> Unit,
     onTypeClick: (typeItem: String) -> Unit,
+    onMapIconClick : () -> Unit,
     onFavoriteIconClick: () -> Unit,
     onShareIconClick: () -> Unit
 ) {
@@ -118,25 +121,45 @@ fun EventItem(
                 modifier = modifier
                     .fillMaxWidth()
                     .padding(horizontal = 4.dp),
-                horizontalArrangement = Arrangement.End
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                IconButton(onClick = { onFavoriteIconClick() }) {
+
+                IconButton(onClick = { onMapIconClick() }) {
                     Icon(
-                        imageVector = if (eventUiModel.isFavorite) Icons.Outlined.Favorite else Icons.Outlined.FavoriteBorder,
-                        contentDescription = if (eventUiModel.isFavorite) "즐겨찾기 해제하기" else "즐겨찾기 하기",
+                        imageVector = Icons.Outlined.LocationOn,
+                        contentDescription = "지도보기",
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
 
-                IconButton(onClick = { onShareIconClick() }) {
-                    Icon(
-                        imageVector = Icons.Outlined.Share,
-                        contentDescription = "공유하기",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
+                Row(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp),
+                    horizontalArrangement = Arrangement.End
+                ) {
 
+
+                    IconButton(onClick = { onFavoriteIconClick() }) {
+                        Icon(
+                            imageVector = if (eventUiModel.isFavorite) Icons.Outlined.Favorite else Icons.Outlined.FavoriteBorder,
+                            contentDescription = if (eventUiModel.isFavorite) "즐겨찾기 해제하기" else "즐겨찾기 하기",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+
+                    IconButton(onClick = { onShareIconClick() }) {
+                        Icon(
+                            imageVector = Icons.Outlined.Share,
+                            contentDescription = "공유하기",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+
+                }
             }
+
+
 
         }
     }
@@ -150,6 +173,7 @@ private fun EventItemPreview(@PreviewParameter(PreviewParameterProvider::class) 
             eventUiModel = previewModel.eventUiModel,
             onItemClick = {},
             onTypeClick = {},
+            onMapIconClick = {},
             onFavoriteIconClick = {},
             onShareIconClick = {}
         )

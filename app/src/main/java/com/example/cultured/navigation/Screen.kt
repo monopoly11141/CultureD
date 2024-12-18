@@ -5,7 +5,7 @@ sealed class Screen(val route: String) {
 
     data object LoginScreen: Screen("login_screen")
 
-    data object CommentScreen: Screen("comment_screen")
-
     data object CommentWriteScreen: Screen("comment_write_screen")
+
+    data object MapScreen: Screen("map_screen")
 }

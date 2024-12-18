@@ -1,5 +1,6 @@
 package com.example.cultured.feature_map.presentation.map
 
 data class MapState(
-    val a: String = ""
+    val positionX : Double = 0.0,
+    val positionY: Double = 0.0
 )

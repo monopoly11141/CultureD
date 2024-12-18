@@ -101,8 +101,6 @@ fun EventListScreen(
 
             ) {
                 EventTopAppBar(
-                    modifier = modifier
-                        .heightIn(max = 56.dp),
                     titleText = "행사 정보"
                 ) {
                     onAction.invoke(EventListAction.OnLogoutClick)
@@ -164,7 +162,7 @@ fun EventListScreen(
                             onAction.invoke(EventListAction.OnTypeClick(typeItem))
                         },
                         onMapIconClick = {
-                            navController.navigate(Screen.MapScreen.route)
+                            navController.navigate("${Screen.MapScreen.route}/${eventUiModel.longitude}/${eventUiModel.latitude}")
                         },
                         onFavoriteIconClick = {
                             onAction.invoke(EventListAction.OnItemFavoriteClick(eventUiModel))

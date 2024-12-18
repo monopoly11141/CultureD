@@ -58,7 +58,15 @@ fun Navigation(
         }
 
         composable(
-            route = Screen.MapScreen.route,
+            route = "${Screen.MapScreen.route}/{positionX}/{positionY}",
+            arguments = listOf(
+                navArgument("positionX") {
+                    type = NavType.StringType
+                },
+                navArgument("positionY") {
+                    type = NavType.StringType
+                }
+            )
         ) {
             MapScreenRoot(
                 navController = navHostController

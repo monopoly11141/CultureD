@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,7 +29,7 @@ class CommentViewModel @Inject constructor(
     val state = _state
         .onStart {
             initFirebaseUser()
-            initCommentList()
+            //initCommentList()
         }
         .stateIn(
             viewModelScope,
@@ -84,7 +86,7 @@ class CommentViewModel @Inject constructor(
         }
     }
 
-    private fun initCommentList() {
+    public fun initCommentList() {
 
         _state.update {
             it.copy(
@@ -163,38 +165,41 @@ class CommentViewModel @Inject constructor(
             content = _state.value.currentCommentContent
         )
 
+        _state.update {
+            it.copy(
+                commentList = emptyList()
+            )
+        }
+
         firestore.collection(_state.value.eventUiModel.toDocumentId())
             .get()
             .addOnSuccessListener { result ->
                 for (document in result) {
                     val documentCommentUiModel = document.toObject(CommentUiModel::class.java)
-
-                    if (documentCommentUiModel == _state.value.currentEditingComment) {
-
-                        var commentList = _state.value.commentList
-                        commentList = commentList.map { comment ->
-                            if(comment == _state.value.currentEditingComment) {
-                                commentUiModel
-                            }else {
-                                comment
+                    viewModelScope.launch {
+                        if (documentCommentUiModel == _state.value.currentEditingComment) {
+                            firestore.collection(_state.value.eventUiModel.toDocumentId())
+                                .document(document.id)
+                                .set(commentUiModel)
+                                .await()
+                            _state.update {
+                                it.copy(
+                                    commentList = _state.value.commentList.plus(commentUiModel)
+                                )
+                            }
+                        } else {
+                            _state.update {
+                                it.copy(
+                                    commentList = _state.value.commentList.plus(documentCommentUiModel)
+                                )
                             }
                         }
 
-                        firestore.collection(_state.value.eventUiModel.toDocumentId())
-                            .document(document.id)
-                            .set(commentUiModel)
 
-
-                        _state.update {
-                            it.copy(
-                                commentList = commentList
-                            )
-                        }
-
-                        break
                     }
                 }
             }
+
 
     }
 

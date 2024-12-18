@@ -1,5 +1,6 @@
 package com.example.cultured.feature_comment.presentation
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -45,8 +46,9 @@ fun CommentScreenRoot(
 ) {
     LaunchedEffect(true) {
         eventUiModel?.let {
+            Log.d("TAG", "called")
             viewModel.onAction(CommentAction.InitEventUiModel(it))
-            //viewModel.onAction(CommentAction.InitCommentList)
+            viewModel.initCommentList()
         }
     }
 
@@ -136,10 +138,7 @@ fun CommentScreen(
                 modifier = modifier
                     .weight(1f)
             ) {
-                items(
-                    state.commentList,
-                    key = { comment -> comment.toString() }
-                ) { commentUiModel ->
+                items(state.commentList) { commentUiModel ->
                     CommentItem(
                         modifier = modifier
                             .padding(2.dp),

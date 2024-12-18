@@ -10,9 +10,11 @@ import com.example.cultured.feature_comment.presentation.model.CommentUiModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -29,7 +31,7 @@ class CommentViewModel @Inject constructor(
     val state = _state
         .onStart {
             initFirebaseUser()
-            //initCommentList()
+            initCommentList()
         }
         .stateIn(
             viewModelScope,
@@ -37,6 +39,8 @@ class CommentViewModel @Inject constructor(
             CommentState()
         )
 
+    private val _eventChannel = Channel<CommentEvent>()
+    val eventChannel = _eventChannel.receiveAsFlow()
 
     fun onAction(action: CommentAction) {
         when (action) {
@@ -86,7 +90,7 @@ class CommentViewModel @Inject constructor(
         }
     }
 
-    public fun initCommentList() {
+    private fun initCommentList() {
 
         _state.update {
             it.copy(
@@ -140,21 +144,25 @@ class CommentViewModel @Inject constructor(
             author = _state.value.currentUser,
             content = _state.value.currentCommentContent
         )
-
-        firestore.collection(_state.value.eventUiModel.toDocumentId())
-            .add(commentUiModel)
-            .addOnSuccessListener {
-                _state.update {
-                    it.copy(
-                        commentList = _state.value.commentList.plus(commentUiModel),
-                        currentCommentTitle = "",
-                        currentCommentContent = ""
-                    )
+        viewModelScope.launch {
+            firestore.collection(_state.value.eventUiModel.toDocumentId())
+                .add(commentUiModel)
+                .addOnSuccessListener {
+                    _state.update {
+                        it.copy(
+                            commentList = _state.value.commentList.plus(commentUiModel),
+                            currentCommentTitle = "",
+                            currentCommentContent = ""
+                        )
+                    }
                 }
-            }
-            .addOnFailureListener { e ->
-                Log.w("CommentViewModel", "${e.message}")
-            }
+                .addOnFailureListener { e ->
+                    Log.w("CommentViewModel", "${e.message}")
+                }.await()
+
+
+            _eventChannel.send(CommentEvent.OnNavigateUp)
+        }
 
     }
 
@@ -170,36 +178,26 @@ class CommentViewModel @Inject constructor(
                 commentList = emptyList()
             )
         }
+        viewModelScope.launch {
+            firestore.collection(_state.value.eventUiModel.toDocumentId())
+                .get()
+                .addOnSuccessListener { result ->
+                    for (document in result) {
+                        val documentCommentUiModel = document.toObject(CommentUiModel::class.java)
 
-        firestore.collection(_state.value.eventUiModel.toDocumentId())
-            .get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    val documentCommentUiModel = document.toObject(CommentUiModel::class.java)
-                    viewModelScope.launch {
                         if (documentCommentUiModel == _state.value.currentEditingComment) {
                             firestore.collection(_state.value.eventUiModel.toDocumentId())
                                 .document(document.id)
                                 .set(commentUiModel)
-                                .await()
-                            _state.update {
-                                it.copy(
-                                    commentList = _state.value.commentList.plus(commentUiModel)
-                                )
-                            }
-                        } else {
-                            _state.update {
-                                it.copy(
-                                    commentList = _state.value.commentList.plus(documentCommentUiModel)
-                                )
-                            }
                         }
 
-
                     }
-                }
-            }
+                }.await()
 
+            initCommentList()
+
+            _eventChannel.send(CommentEvent.OnNavigateUp)
+        }
 
     }
 
@@ -231,7 +229,9 @@ class CommentViewModel @Inject constructor(
     private fun onWriteCommentButtonClick() {
         _state.update {
             it.copy(
-                isCreate = true
+                isCreate = true,
+                currentCommentTitle = "",
+                currentCommentContent = ""
             )
         }
     }

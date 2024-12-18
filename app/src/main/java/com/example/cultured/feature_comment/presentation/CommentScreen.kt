@@ -33,9 +33,12 @@ import com.example.cultured.core.presentation.component.EventImage
 import com.example.cultured.core.presentation.model.EventUiModel
 import com.example.cultured.core.presentation.preview.PreviewModel
 import com.example.cultured.core.presentation.preview.PreviewParameterProvider
+import com.example.cultured.core.presentation.util.ObserveAsEvents
 import com.example.cultured.feature_comment.presentation.component.CommentItem
 import com.example.cultured.navigation.Screen
 import com.example.cultured.ui.theme.CultureDTheme
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
 fun CommentScreenRoot(
@@ -46,9 +49,7 @@ fun CommentScreenRoot(
 ) {
     LaunchedEffect(true) {
         eventUiModel?.let {
-            Log.d("TAG", "called")
             viewModel.onAction(CommentAction.InitEventUiModel(it))
-            viewModel.initCommentList()
         }
     }
 
@@ -139,6 +140,7 @@ fun CommentScreen(
                     .weight(1f)
             ) {
                 items(state.commentList) { commentUiModel ->
+                    Log.d("CommentScreen", commentUiModel.toString())
                     CommentItem(
                         modifier = modifier
                             .padding(2.dp),

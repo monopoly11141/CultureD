@@ -26,6 +26,7 @@ firebaseBom = "33.6.0"
 firebaseCore = "21.1.1"
 googleServices = "4.4.2"
 firebaseFirestoreKtx = "25.1.1"
+kakaoMaps = "2.9.5"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -65,6 +66,8 @@ firebase-auth = { module = "com.google.firebase:firebase-auth", version.ref = "f
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-core = { module = "com.google.firebase:firebase-core", version.ref = "firebaseCore" }
 firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
+kakao-maps = { group = "com.kakao.maps.open", name = "android", version.ref = "kakaoMaps" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -141,4 +144,8 @@ firebase = [
     "firebase-core",
     "firebase-auth",
     "firebase-firestore-ktx"
+]
+
+kakao = [
+    "kakao-maps"
 ]

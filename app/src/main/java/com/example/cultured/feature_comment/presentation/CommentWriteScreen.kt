@@ -73,10 +73,9 @@ fun CommentWriteScreen(
         onPostComment = {
             if(state.isCreate) {
                 onAction.invoke(CommentAction.OnPostComment)
-                //navController.navigate(state.eventUiModel)
             } else {
                 onAction.invoke(CommentAction.OnEditComment)
-                //navController.navigate(state.eventUiModel)
+                //여기
             }
         }
     )

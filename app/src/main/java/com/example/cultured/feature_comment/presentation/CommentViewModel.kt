@@ -189,6 +189,8 @@ class CommentViewModel @Inject constructor(
                             firestore.collection(_state.value.eventUiModel.toDocumentId())
                                 .document(document.id)
                                 .set(commentUiModel)
+
+                            break
                         }
 
                     }

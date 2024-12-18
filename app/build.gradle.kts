@@ -87,4 +87,9 @@ dependencies {
     //firebase
     implementation(libs.bundles.firebase)
 
+    //kakao
+    implementation(libs.bundles.kakao)
+    implementation("com.kakao.sdk:v2-all:2.15.0")
+
+
 }

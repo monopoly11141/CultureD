@@ -5,6 +5,8 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -22,9 +24,7 @@ import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
 import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.MapLifeCycleCallback
-import com.kakao.vectormap.MapType
 import com.kakao.vectormap.MapView
-import com.kakao.vectormap.MapViewInfo
 import com.kakao.vectormap.camera.CameraUpdateFactory
 import com.kakao.vectormap.label.LabelOptions
 import com.kakao.vectormap.label.LabelStyle
@@ -67,7 +67,7 @@ fun MapScreen(
             modifier = modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-        ){
+        ) {
             val context = LocalContext.current
 
             val mapView = remember { MapView(context) }
@@ -75,7 +75,7 @@ fun MapScreen(
             AndroidView(
                 modifier = modifier
                     .fillMaxSize(),
-                factory = { context ->
+                factory = { _ ->
                     mapView.apply {
                         mapView.start(
                             object : MapLifeCycleCallback() {
@@ -90,31 +90,25 @@ fun MapScreen(
                                 }
                             },
                             object : KakaoMapReadyCallback() {
-                                // KakaoMap이 준비되었을 때 호출
+
                                 override fun onMapReady(kakaoMap: KakaoMap) {
-
-                                    // 카메라를 (locationY, locationX) 위치로 이동시키는 업데이트 생성
-                                    val cameraUpdate = CameraUpdateFactory.newCenterPosition(LatLng.from(latitude,longitude))
-
-                                    // 지도에 표시할 라벨의 스타일 설정
-                                    val style = kakaoMap.labelManager?.addLabelStyles(LabelStyles.from(LabelStyle.from(R.drawable.password_show)))
-
-                                    // 라벨 옵션을 설정하고 위치와 스타일을 적용
+                                    val cameraUpdate =
+                                        CameraUpdateFactory.newCenterPosition(LatLng.from(latitude, longitude))
+                                    val style = kakaoMap.labelManager?.addLabelStyles(
+                                        LabelStyles.from(
+                                            LabelStyle.from(
+                                                R.drawable.location
+                                            )
+                                        )
+                                    )
                                     val options = LabelOptions.from(LatLng.from(latitude, longitude)).setStyles(style)
 
-                                    // KakaoMap의 labelManager에서 레이어를 가져옴
                                     val layer = kakaoMap.labelManager?.layer
-
-                                    // 카메라를 지정된 위치로 이동
                                     kakaoMap.moveCamera(cameraUpdate)
-
-                                    // 지도에 라벨을 추가
                                     layer?.addLabel(options)
                                 }
 
                                 override fun getPosition(): LatLng {
-                                    // 현재 위치를 반환
-                                    //return LatLng.from(37.406960, 127.115587);
                                     return LatLng.from(latitude, longitude)
                                 }
                             },

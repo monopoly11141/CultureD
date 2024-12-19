@@ -162,7 +162,7 @@ fun EventListScreen(
                             onAction.invoke(EventListAction.OnTypeClick(typeItem))
                         },
                         onMapIconClick = {
-                            navController.navigate("${Screen.MapScreen.route}/${eventUiModel.longitude}/${eventUiModel.latitude}")
+                            navController.navigate("${Screen.MapScreen.route}/${eventUiModel.latitude}/${eventUiModel.longitude}")
                         },
                         onFavoriteIconClick = {
                             onAction.invoke(EventListAction.OnItemFavoriteClick(eventUiModel))

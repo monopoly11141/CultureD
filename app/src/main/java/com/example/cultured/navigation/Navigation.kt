@@ -2,6 +2,7 @@ package com.example.cultured.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavArgument
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -14,6 +15,7 @@ import com.example.cultured.feature_comment.presentation.CommentWriteScreenRoot
 import com.example.cultured.feature_event.presentation.list.EventListScreenRoot
 import com.example.cultured.feature_login.presentation.login.LoginScreenRoot
 import com.example.cultured.feature_map.presentation.map.MapScreenRoot
+import com.google.android.gms.common.internal.service.Common.API
 
 @Composable
 fun Navigation(
@@ -58,18 +60,23 @@ fun Navigation(
         }
 
         composable(
-            route = "${Screen.MapScreen.route}/{positionX}/{positionY}",
+            route = "${Screen.MapScreen.route}/{latitude}/{longitude}",
             arguments = listOf(
-                navArgument("positionX") {
+                navArgument("latitude") {
                     type = NavType.StringType
                 },
-                navArgument("positionY") {
+                navArgument("longitude") {
                     type = NavType.StringType
                 }
             )
-        ) {
+        ) { entry ->
             MapScreenRoot(
-                navController = navHostController
+                navController = navHostController,
+                /**
+                 * API give longitude value as latitude, vise versa
+                 */
+                latitude = entry.arguments?.getString("longitude")?.toDouble() ?: 0.0,
+                longitude = entry.arguments?.getString("latitude")?.toDouble() ?: 0.0
             )
         }
 

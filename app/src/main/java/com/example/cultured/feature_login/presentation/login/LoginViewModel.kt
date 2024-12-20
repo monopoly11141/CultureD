@@ -1,5 +1,7 @@
 package com.example.cultured.feature_login.presentation.login
 
+import android.content.Context
+import android.util.Log
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.lifecycle.ViewModel
@@ -7,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.cultured.R
 import com.example.cultured.feature_login.domain.FirebaseAuthError
 import com.google.firebase.auth.FirebaseAuth
+import com.kakao.sdk.user.UserApiClient
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +23,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val auth: FirebaseAuth
+    private val auth: FirebaseAuth,
+    private val userApiClient: UserApiClient
 ) : ViewModel() {
     private val _state = MutableStateFlow(LoginState())
     val state = _state
@@ -61,6 +65,10 @@ class LoginViewModel @Inject constructor(
 
             is LoginAction.OnLoginClick -> {
                 onLoginClick()
+            }
+
+            is LoginAction.OnKakaoLoginClick -> {
+                onKakaoLoginClick(action.context)
             }
 
             is LoginAction.OnPasswordIconClick -> {
@@ -115,6 +123,21 @@ class LoginViewModel @Inject constructor(
                 viewModelScope.launch {
                     _eventChannel.send(LoginEvent.Error(error = FirebaseAuthError.LOGIN_FAILED))
                 }
+            }
+        }
+    }
+
+    private fun onKakaoLoginClick(context: Context) {
+        if(!userApiClient.isKakaoTalkLoginAvailable(context)) {
+            throw Exception("Kakaotalk login not available")
+        }
+
+        userApiClient.loginWithKakaoTalk(context) { token, error ->
+            if (error != null) {
+                Log.e("LoginVIewModel", "로그인 실패", error)
+            }
+            else if (token != null) {
+                Log.i("LoginVIewModel", "로그인 성공 ${token.accessToken}")
             }
         }
     }

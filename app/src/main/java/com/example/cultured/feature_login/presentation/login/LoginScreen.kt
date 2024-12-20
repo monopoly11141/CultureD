@@ -1,12 +1,15 @@
 package com.example.cultured.feature_login.presentation.login
 
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -14,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -110,7 +114,8 @@ fun LoginScreen(
             }
 
             Column(
-                verticalArrangement = Arrangement.spacedBy(6.dp)
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 LoginScreenTextField(
                     modifier = modifier
@@ -137,34 +142,53 @@ fun LoginScreen(
                         onAction.invoke(LoginAction.OnPasswordIconClick)
                     }
                 )
+                Row(
+                    modifier = modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    LoginScreenButton(
+                        modifier = modifier
+                            .weight(1f)
+                            .padding(horizontal = 8.dp),
+                        buttonText = "회원가입",
+                        onButtonClick = {
+                            onAction.invoke(LoginAction.OnSignUpClick)
+                        }
+                    )
+
+                    LoginScreenButton(
+                        modifier = modifier
+                            .weight(1f)
+                            .padding(horizontal = 8.dp),
+                        buttonText = "로그인",
+                        onButtonClick = {
+                            onAction.invoke(LoginAction.OnLoginClick)
+                        }
+                    )
+                }
             }
 
-            Row(
+            LoginScreenButton(
                 modifier = modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-            ) {
-                LoginScreenButton(
-                    modifier = modifier
-                        .weight(1f)
-                        .padding(horizontal = 8.dp),
-                    buttonText = "회원가입",
-                    onButtonClick = {
-                        onAction.invoke(LoginAction.OnSignUpClick)
-                    }
-                )
-
-                LoginScreenButton(
-                    modifier = modifier
-                        .weight(1f)
-                        .padding(horizontal = 8.dp),
-                    buttonText = "로그인",
-                    onButtonClick = {
-                        onAction.invoke(LoginAction.OnLoginClick)
-                    }
-                )
-
-            }
+                    .fillMaxWidth(0.8f)
+                    .padding(horizontal = 8.dp),
+                buttonText = "카카오로 시작하기",
+                buttonColors = ButtonColors(
+                    containerColor = Color.Yellow,
+                    contentColor = Color.Black,
+                    disabledContainerColor = Color.Yellow,
+                    disabledContentColor = Color.Black
+                ),
+                borderStroke = BorderStroke(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.primary
+                ),
+                textFontWeight = FontWeight.Bold,
+                onButtonClick = {
+                    onAction.invoke(LoginAction.OnKakaoLoginClick(context))
+                }
+            )
 
         }
     }
